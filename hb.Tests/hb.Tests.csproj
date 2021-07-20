@@ -5,11 +5,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{105C0128-CE3E-4A99-9898-510C7BF28E11}</ProjectGuid>
+    <ProjectGuid>{275B3EFA-1E4C-4982-A471-7A3E44352372}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>hb.Tests</RootNamespace>
-    <AssemblyName>hb.Tests</AssemblyName>
+    <RootNamespace>hb.tests</RootNamespace>
+    <AssemblyName>hb.tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -49,11 +49,25 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="MD5UnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\hb.network\hb.network.csproj">
+      <Project>{fd2e681c-7aa9-4836-a280-674d5d4e4532}</Project>
+      <Name>hb.network</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\hb.wpf\hb.wpf.csproj">
+      <Project>{bfde7c45-6283-4b35-a0ef-5aae59f4af1f}</Project>
+      <Name>hb.wpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\hb\hb.csproj">
+      <Project>{57ccfac9-7274-4696-84d0-4b973100f22f}</Project>
+      <Name>hb</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
