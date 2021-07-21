@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -10,11 +9,15 @@ namespace hb.Dynamic
     /// <summary>
     /// author     :habo
     /// date       :2021/7/20 1:45:00
-    /// description:
+    /// description:Json操作
     /// </summary>
     public class DynamicJson
     {
         public static string SerializeObject(object value)
+        {
+            return JsonConvert.SerializeObject(value, Formatting.None);
+        }
+        public static string SerializeObjectNullIgnore(object value)
         {
             JsonSerializerSettings jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
             return JsonConvert.SerializeObject(value, Formatting.None, jsonSettings);
@@ -22,26 +25,26 @@ namespace hb.Dynamic
 
         public static string SerializeObject(object value, string[] properties, bool retain = true)
         {
+            JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
+            jsonSettings.ContractResolver = new LimitPropsContractResolver(properties, retain);
+            return JsonConvert.SerializeObject(value, Formatting.None, jsonSettings);
+        }
+
+        public static string SerializeObjectNullIgnore(object value, string[] properties, bool retain = true)
+        {
             JsonSerializerSettings jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
             jsonSettings.ContractResolver = new LimitPropsContractResolver(properties, retain);
             return JsonConvert.SerializeObject(value, Formatting.None, jsonSettings);
         }
 
-        public static T DeserializeObject<T>(string value, string timeFormat = "yyyy-MM-dd HH:mm:ss")
+        public static dynamic DeserializeObject(string value)
         {
-            var iso = new IsoDateTimeConverter();
-            iso.DateTimeFormat = timeFormat;
-            return JsonConvert.DeserializeObject<T>(value, iso);
+            return JsonConvert.DeserializeObject<dynamic>(value);
         }
 
-        public static string SerializeXmlNode(System.Xml.XmlNode xml, bool omitRootObject)
+        public static T DeserializeObject<T>(string value)
         {
-            return JsonConvert.SerializeXmlNode(xml, Formatting.Indented, omitRootObject);
-        }
-
-        public static string SerializeXNode(System.Xml.Linq.XObject node, bool omitRootObject)
-        {
-            return JsonConvert.SerializeXNode(node, Formatting.Indented, omitRootObject);
+            return JsonConvert.DeserializeObject<T>(value);
         }
 
     }
@@ -64,7 +67,6 @@ namespace hb.Dynamic
         }
 
         protected override IList<JsonProperty> CreateProperties(Type type,
-
         MemberSerialization memberSerialization)
         {
             IList<JsonProperty> list =

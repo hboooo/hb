@@ -6,7 +6,7 @@ namespace hb
     /// <summary>
     /// author     :habo
     /// date       :2021/7/21 1:51:24
-    /// description:
+    /// description:字符串扩展
     /// </summary>
     public static class StringExtension
     {

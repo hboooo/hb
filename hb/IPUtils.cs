@@ -2,6 +2,7 @@
 using System.IO.Ports;
 using System.Linq;
 using System.Management;
+using System.Net;
 
 namespace hb
 {
@@ -13,82 +14,58 @@ namespace hb
     public class IPUtils
     {
         /// <summary>
-        /// 获取本地Mac地址
+        /// 获取MAC地址，仅支持单网卡
         /// </summary>
         /// <returns></returns>
-        public static string GetLocalMacAddress()
+        public static string GetMacAddr()
         {
-            try
+            ManagementClass managementClass = new ManagementClass("Win32_NetworkAdapterConfiguration");
+            ManagementObjectCollection managements = managementClass.GetInstances();
+            foreach (ManagementObject managementObject in managements)
             {
-                //获取网卡硬件地址 
-                string mac = "";
-                ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
-                ManagementObjectCollection moc = mc.GetInstances();
-                foreach (ManagementObject mo in moc)
-                {
-                    if ((bool)mo["IPEnabled"] == true)
-                    {
-                        mac = mo["MacAddress"].ToString();
-                        break;
-                    }
-                }
-                moc = null;
-                mc = null;
-                return mac;
+                if (managementObject["IPEnabled"].ToString() == "True")
+                    return managementObject["MacAddress"].ToString();
             }
-            catch (Exception ex)
-            {
-
-            }
-            return "";
+            return null;
         }
 
         /// <summary>
-        /// 检查串口是否存在
+        /// 获取本机IP地址，仅支持单网卡
+        /// </summary>
+        /// <returns></returns>
+        public static string GetLocalHost()
+        {
+            IPAddress[] addrs = Dns.GetHostAddresses(Environment.MachineName);
+            foreach (IPAddress addr in addrs)
+            {
+                if (addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    return addr.ToString();
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 串口是否存在
         /// </summary>
         /// <param name="com"></param>
         /// <returns></returns>
-        public static bool IsComExist(string com)
+        public static bool ComExist(string com)
         {
-            try
+            if (string.IsNullOrEmpty(com))
             {
-                string[] comPorts = SerialPort.GetPortNames();
-                if (comPorts != null && comPorts.Length > 0)
-                {
-                    var query = comPorts.Where(c => string.Compare(c, com) == 0);
-                    if (query.Count() > 0)
-                        return true;
-                }
+                throw new ArgumentNullException("com");
             }
-            catch (Exception ex)
-            {
 
+            string[] coms = SerialPort.GetPortNames();
+            var res = coms.Where(c => string.Compare(c, com, true) == 0);
+            if (res.Count() > 0)
+            {
+                return true;
             }
             return false;
         }
 
-        /// <summary>
-        /// 獲取本機IP
-        /// </summary>
-        /// <returns></returns>
-        public static string GetLocalIP()
-        {
-            try
-            {
-                System.Net.IPAddress[] _IPList = System.Net.Dns.GetHostAddresses(Environment.MachineName);
-                for (int i = 0; i != _IPList.Length; i++)
-                {
-                    if (_IPList[i].AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                    {
-                        return _IPList[i].ToString();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
-            return "";
-        }
     }
 }

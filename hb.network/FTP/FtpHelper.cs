@@ -6,14 +6,13 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace hb.network.FTP
 {
     /// <summary>
     /// author     :habo
     /// date       :2021/7/20 1:36:54
-    /// description:
+    /// description:FTP操作
     /// </summary>
     public class FtpHelper
     {
@@ -35,44 +34,27 @@ namespace hb.network.FTP
         /// 获取或者是读取文件、目录列表时所使用的编码，默认为UTF-8 
         /// </summary>
         public Encoding Encode { get; set; }
-        /// <summary>
-        /// 异常信息
-        /// </summary>
-        public string ErrorMsg { get; set; }
-        /// <summary>
-        /// Exception
-        /// </summary>
-        public System.Exception Exception { get; set; }
-        /// <summary>
-        /// 状态
-        /// </summary>
-        public FtpStatusCode StatusCode { get; set; }
-        /// <summary>
-        /// 状态描述
-        /// </summary>
-        public string StatusDescription { get; set; }
 
-
-        private HashSet<string> files = new HashSet<string>();
         #endregion
 
         #region 构造函数
-        public FtpHelper(Uri uri, string username, string password)
+        public FtpHelper(Uri uri, string username, string password, string encode = "utf-8")
         {
-            this.Uri = uri;
-            this.UserName = username;
-            this.Password = password;
-            this.Encode = Encoding.GetEncoding("utf-8");
+            this.Uri = uri ?? throw new ArgumentNullException("uri");
+            this.UserName = username ?? throw new ArgumentNullException("username");
+            this.Password = password ?? throw new ArgumentNullException("password");
+            this.Encode = Encoding.GetEncoding(encode);
         }
 
-        public FtpHelper(Uri uri)
+        public FtpHelper(Uri uri, string encode = "utf-8") : this(uri, null, null, encode)
         {
-            this.Uri = uri;
-            this.Encode = Encoding.GetEncoding("utf-8");
+
         }
+
         #endregion
 
         #region 建立连接
+
         /// <summary>
         /// 建立FTP链接,返回请求对象
         /// </summary>
@@ -81,24 +63,17 @@ namespace hb.network.FTP
         /// <returns></returns>
         private FtpWebRequest CreateRequest(Uri uri, string method)
         {
-            try
+            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(uri);
+            if (!string.IsNullOrEmpty(UserName))
             {
-                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(uri);
-                if (!string.IsNullOrEmpty(UserName))
-                {
-                    request.Credentials = new NetworkCredential(this.UserName, this.Password);//指定登录ftp服务器的用户名和密码。
-                }
-                request.KeepAlive = false;    //指定连接是应该关闭还是在请求完成之后关闭，默认为true
-                request.UsePassive = true;    //指定使用被动模式，默认为true
-                request.UseBinary = true;     //指示服务器要传输的是二进制数据.false,指示数据为文本。默认值为true
-                request.EnableSsl = false;    //如果控制和数据传输是加密的,则为true.否则为false.默认值为 false
-                request.Method = method;
-                return request;
+                request.Credentials = new NetworkCredential(this.UserName, this.Password);//指定登录ftp服务器的用户名和密码。
             }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }
+            request.KeepAlive = false;    //指定连接是应该关闭还是在请求完成之后关闭，默认为true
+            request.UsePassive = true;    //指定使用被动模式，默认为true
+            request.UseBinary = true;     //指示服务器要传输的是二进制数据.false,指示数据为文本。默认值为true
+            request.EnableSsl = false;    //如果控制和数据传输是加密的,则为true.否则为false.默认值为 false
+            request.Method = method;
+            return request;
         }
 
         /// <summary>
@@ -109,22 +84,12 @@ namespace hb.network.FTP
         /// <returns></returns>
         private FtpWebResponse CreateResponse(Uri uri, string method)
         {
-            try
-            {
-                //LoggingService.InfoFormat("Create response,ftp uri:{0},method:{1}", uri.ToString(), method);
-                FtpWebRequest request = CreateRequest(uri, method);
-                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
-                return response;
-            }
-            catch (WebException ex)
-            {
-                String status = ((FtpWebResponse)ex.Response).StatusDescription;
-                //LoggingService.ErrorFormat(ex, "Create response failed,error:{0},message:{1},ftp uri:{2},method:{3}", ex.Message, status, uri.ToString(), method);
-                throw ex;
-            }
+            FtpWebRequest request = CreateRequest(uri, method);
+            FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+            return response;
         }
 
-        private void CreateResponseAsync(Uri uri, string method, Action<FtpWebResponse> action)
+        private void CreateResponseAsync(Uri uri, string method, Action<FtpWebResponse> action, Action<Exception> errAction = null)
         {
             try
             {
@@ -137,54 +102,50 @@ namespace hb.network.FTP
                         var response = (FtpWebResponse)req.EndGetResponse(obj);
                         action?.Invoke(response);
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
-                        //LoggingService.Error($"method:{method}; url：{uri}; message:{ex.Message}", ex);
-                        action?.Invoke(null);
+                        errAction?.Invoke(ex);
                     }
                 }, request);
             }
             catch (WebException ex)
             {
-                //LoggingService.Error(ex);
-                action?.Invoke(null);
+                errAction?.Invoke(ex);
+            }
+            catch (Exception ex)
+            {
+                errAction?.Invoke(ex);
             }
         }
         #endregion
 
         #region 下载文件
+
         /// <summary>
         /// 从FTP服务器下载文件
         /// </summary>
-        /// <param name="remoteFilePath">远程完整文件名</param>
-        /// <param name="localFilePath">本地带有完整路径的文件名</param>
-        public bool DownloadFile(string remoteFilePath, string localFilePath, string filename = null)
+        /// <param name="remoteFile">远程完整文件名</param>
+        /// <param name="localFile">本地带有完整路径的文件名</param>
+        public bool DownloadFile(string remoteFile, string localFile)
         {
             try
             {
-                string localDirector = Path.GetDirectoryName(localFilePath);
-                //TODO:创建目录
-                //Utils.CheckCreateDirectoroy(localDirector, true);
-                if (!IsDownloaded(remoteFilePath, localFilePath, filename))
+                string localDirector = Path.GetDirectoryName(localFile);
+                CheckCreateDir(localDirector, true);
+                FtpWebResponse response = CreateResponse(new Uri(this.Uri.ToString() + remoteFile), WebRequestMethods.Ftp.DownloadFile);
+                using (Stream stream = response.GetResponseStream())
                 {
-                    //TODO:删除文件
-                    //Utils.DeleteFile(localFilePath);
-                    FtpWebResponse response = CreateResponse(new Uri(this.Uri.ToString() + remoteFilePath), WebRequestMethods.Ftp.DownloadFile);
-
-                    using (Stream stream = response.GetResponseStream())
+                    using (MemoryStream ms = new MemoryStream())
                     {
-                        using (MemoryStream ms = new MemoryStream())
+                        byte[] buffer = new byte[1024];
+                        int bytesCount = 0;
+                        while ((bytesCount = stream.Read(buffer, 0, buffer.Length)) > 0)
                         {
-                            byte[] buffer = new byte[1024];
-                            int bytesCount = 0;
-                            while ((bytesCount = stream.Read(buffer, 0, buffer.Length)) > 0)
-                            {
-                                ms.Write(buffer, 0, bytesCount);
-                            }
-                            using (FileStream fs = new FileStream(localFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite))
-                            {
-                                fs.Write(ms.ToArray(), 0, (int)ms.Length);
-                            }
+                            ms.Write(buffer, 0, bytesCount);
+                        }
+                        using (FileStream fs = new FileStream(localFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+                        {
+                            fs.Write(ms.ToArray(), 0, (int)ms.Length);
                         }
                     }
                 }
@@ -192,267 +153,47 @@ namespace hb.network.FTP
             }
             catch (WebException ex)
             {
-                String status = ((FtpWebResponse)ex.Response).StatusDescription;
-                //LoggingService.ErrorFormat(ex, "Download file failed,error:{0},message:{1},remoteFile:{2},localFile:{3}", ex.Message, status, remoteFilePath, localFilePath);
+                throw ex;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                //LoggingService.ErrorFormat(ex, "Download file failed,error:{0},remoteFile:{1},localFile:{2}", ex.Message, remoteFilePath, localFilePath);
+                throw ex;
             }
-            return false;
         }
 
-        public void DownloadFileAsync(string remoteFilePath, string localFilePath, string filename = null, Action<bool> action = null)
+        public void DownloadFileAsync(string remoteFilePath, string localFilePath, Action<bool> action = null)
         {
             try
             {
                 string localDirector = Path.GetDirectoryName(localFilePath);
-                //TODO:创建目录
-                //Utils.CheckCreateDirectoroy(localDirector, true);
-                IsDownloadedAsync(remoteFilePath, localFilePath, filename, (res) =>
+                CheckCreateDir(localDirector, true);
+                CreateResponseAsync(new Uri(this.Uri.ToString() + remoteFilePath), WebRequestMethods.Ftp.DownloadFile, (ftpWebResponse) =>
                 {
-                    if (!res)
+                    if (ftpWebResponse != null)
                     {
-                        CreateResponseAsync(new Uri(this.Uri.ToString() + remoteFilePath), WebRequestMethods.Ftp.DownloadFile, (ftpWebResponse) =>
+                        using (Stream stream = ftpWebResponse.GetResponseStream())
                         {
-                            if (ftpWebResponse != null)
+                            using (MemoryStream ms = new MemoryStream())
                             {
-                                using (Stream stream = ftpWebResponse.GetResponseStream())
+                                byte[] buffer = new byte[1024];
+                                int bytesCount = 0;
+                                while ((bytesCount = stream.Read(buffer, 0, buffer.Length)) > 0)
                                 {
-                                    using (MemoryStream ms = new MemoryStream())
-                                    {
-                                        byte[] buffer = new byte[1024];
-                                        int bytesCount = 0;
-                                        while ((bytesCount = stream.Read(buffer, 0, buffer.Length)) > 0)
-                                        {
-                                            ms.Write(buffer, 0, bytesCount);
-                                        }
-                                        using (FileStream fs = new FileStream(localFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite))
-                                        {
-                                            fs.Write(ms.ToArray(), 0, (int)ms.Length);
-                                        }
-                                    }
+                                    ms.Write(buffer, 0, bytesCount);
                                 }
-                                ftpWebResponse.Close();
+                                using (FileStream fs = new FileStream(localFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite))
+                                {
+                                    fs.Write(ms.ToArray(), 0, (int)ms.Length);
+                                }
                             }
-                            action?.Invoke(true);
-                        });
+                        }
+                        ftpWebResponse.Close();
                     }
-                    else
-                    {
-                        action?.Invoke(true);
-                    }
+                    action?.Invoke(true);
                 });
             }
             catch (WebException ex)
             {
-                String status = ((FtpWebResponse)ex.Response).StatusDescription;
-                //LoggingService.ErrorFormat(ex, "GetDateTimestamp failed,error:{0},message:{1},remoteFile:{2},localFile:{3}", ex.Message, status, remoteFilePath, localFilePath);
-                action?.Invoke(false);
-            }
-            catch (System.Exception ex)
-            {
-                //LoggingService.ErrorFormat(ex, "GetDateTimestamp failed,error:{0},remoteFile:{1},localFile:{2}", ex.Message, remoteFilePath, localFilePath);
-                action?.Invoke(false);
-            }
-        }
-
-        /// <summary>
-        /// 比对本地文件与服务器文件时间,确认本地是否为最新版本的文件
-        /// </summary>
-        /// <param name="remoteFilePath">FTP文件</param>
-        /// <param name="localFilePath">本地文件</param>
-        /// <returns></returns>
-        private bool IsDownloaded(string remoteFilePath, string localFilePath, string filename)
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(filename))
-                {
-                    //判斷文件是否存在
-                    int index = remoteFilePath.LastIndexOf(filename);
-                    string path = remoteFilePath.Substring(0, index - 1);
-                    if (!IsFtpFileExist(path, filename))
-                    {
-                        //TODO:删除文件
-                        //Utils.DeleteFile(localFilePath);
-                        return true;
-                    }
-                }
-
-                if (File.Exists(localFilePath))
-                {
-                    FtpWebResponse response = CreateResponse(new Uri(this.Uri.ToString() + remoteFilePath), WebRequestMethods.Ftp.GetDateTimestamp);
-                    FileInfo localFile = new FileInfo(localFilePath);
-                    if (localFile.CreationTime >= response.LastModified)
-                    {
-                        //LoggingService.InfoFormat("local file {0} Is the latest, don not need to download", localFile.Name);
-                        return true;
-                    }
-
-                }
-            }
-            catch (WebException ex)
-            {
-                String status = ((FtpWebResponse)ex.Response).StatusDescription;
-                //LoggingService.ErrorFormat(ex, "GetDateTimestamp failed,error:{0},message:{1},remoteFile:{2},localFile:{3}", ex.Message, status, remoteFilePath, localFilePath);
-            }
-            catch (System.Exception ex)
-            {
-                //LoggingService.ErrorFormat(ex, "GetDateTimestamp failed,error:{0},remoteFile:{1},localFile:{2}", ex.Message, remoteFilePath, localFilePath);
-            }
-            return false;
-        }
-
-        private void IsDownloadedAsync(string remoteFilePath, string localFilePath, string filename, Action<bool> action)
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(filename))
-                {
-                    //判斷文件是否存在
-                    int index = remoteFilePath.LastIndexOf(filename);
-                    string path = remoteFilePath.Substring(0, index - 1);
-                    IsFtpFileExistAsync(path, filename, (res) =>
-                    {
-                        if (!res || !File.Exists(localFilePath))
-                        {
-                            //TODO:删除文件
-                            //Utils.DeleteFile(localFilePath);
-                            action?.Invoke(true);
-                        }
-                        else
-                        {
-                            CreateResponseAsync(new Uri(this.Uri.ToString() + remoteFilePath), WebRequestMethods.Ftp.GetDateTimestamp, (ftpWebResponse) =>
-                            {
-                                if (ftpWebResponse != null)
-                                {
-                                    FileInfo localFile = new FileInfo(localFilePath);
-                                    if (localFile.CreationTime >= ftpWebResponse.LastModified)
-                                    {
-                                        //LoggingService.InfoFormat("local file {0} Is the latest, don not need to download", localFile.Name);
-                                        ftpWebResponse.Close();
-                                        action?.Invoke(true);
-                                    }
-                                    else
-                                    {
-                                        ftpWebResponse.Close();
-                                        action?.Invoke(false);
-                                    }
-                                }
-                                else
-                                {
-                                    action?.Invoke(false);
-                                }
-                            });
-                        }
-                    });
-                }
-                else
-                {
-                    action?.Invoke(false);
-                }
-            }
-            catch (WebException ex)
-            {
-                String status = ((FtpWebResponse)ex.Response).StatusDescription;
-                //LoggingService.ErrorFormat(ex, "GetDateTimestamp failed,error:{0},message:{1},remoteFile:{2},localFile:{3}", ex.Message, status, remoteFilePath, localFilePath);
-                action?.Invoke(false);
-            }
-            catch (System.Exception ex)
-            {
-                //LoggingService.ErrorFormat(ex, "GetDateTimestamp failed,error:{0},remoteFile:{1},localFile:{2}", ex.Message, remoteFilePath, localFilePath);
-                action?.Invoke(false);
-            }
-        }
-
-        /// <summary>
-        /// 判斷文件是否存在
-        /// </summary>
-        /// <param name="remoteFilePath"></param>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        private bool IsFtpFileExist(string remoteFilePath, string fileName)
-        {
-            try
-            {
-                if (files.Count == 0)
-                {
-                    FtpWebResponse response = CreateResponse(new Uri(this.Uri.ToString() + remoteFilePath), WebRequestMethods.Ftp.ListDirectory);
-                    using (Stream stream = response.GetResponseStream())
-                    {
-                        using (StreamReader sr = new StreamReader(stream))
-                        {
-                            string file = string.Empty;
-                            while (!string.IsNullOrEmpty((file = sr.ReadLine())))
-                            {
-                                files.Add(file);
-                            }
-                        }
-                    }
-                }
-                var query = files.Where(s => s.Contains(fileName));
-                if (query.Count() > 0)
-                    return true;
-                //else
-                    //LoggingService.InfoFormat("ftp file {0} does not exist", fileName);
-            }
-            catch (WebException ex)
-            {
-                String status = ((FtpWebResponse)ex.Response).StatusDescription;
-                //LoggingService.ErrorFormat(ex, "Check file exist failed,error:{0},message:{1},remoteFile:{2},fileName:{3}", ex.Message, status, remoteFilePath, fileName);
-            }
-            catch (System.Exception ex)
-            {
-                //LoggingService.ErrorFormat(ex, "Check file exist failed,error:{0},remoteFile:{1},fileName:{2}", ex.Message, remoteFilePath, fileName);
-            }
-            return false;
-        }
-
-        private void IsFtpFileExistAsync(string remoteFilePath, string fileName, Action<bool> action)
-        {
-            try
-            {
-                var check = new Action(() =>
-                {
-                    var query = files.Where(s => s.Contains(fileName));
-                    if (query.Count() > 0)
-                        action?.Invoke(true);
-                    else
-                    {
-                        action?.Invoke(false);
-                    }
-                });
-                if (files.Count == 0)
-                {
-                    CreateResponseAsync(new Uri(this.Uri.ToString() + remoteFilePath), WebRequestMethods.Ftp.ListDirectory, (ftpWebResponse) =>
-                    {
-                        if (ftpWebResponse != null)
-                        {
-                            using (var stream = ftpWebResponse.GetResponseStream())
-                            {
-                                using (StreamReader sr = new StreamReader(stream))
-                                {
-                                    string file = string.Empty;
-                                    while (!string.IsNullOrEmpty((file = sr.ReadLine())))
-                                    {
-                                        files.Add(file);
-                                    }
-                                }
-                            }
-                            ftpWebResponse.Close();
-                        }
-                        check();
-                    });
-                }
-                else
-                {
-                    check();
-                }
-            }
-            catch (WebException ex)
-            {
-                String status = ((FtpWebResponse)ex.Response).StatusDescription;
                 action?.Invoke(false);
             }
             catch (System.Exception ex)
@@ -460,9 +201,11 @@ namespace hb.network.FTP
                 action?.Invoke(false);
             }
         }
+
         #endregion
 
         #region 上传文件
+
         public delegate void FtpUploadProgress(int value);
         public event FtpUploadProgress FtpUploadProgressEvent;
 
@@ -479,6 +222,7 @@ namespace hb.network.FTP
         {
             UploadFile(localFilePath, remoteFilePath, false);
         }
+
         /// <summary>
         /// 上传文件到FTP服务器,若文件已存在自动覆盖
         /// </summary>
@@ -508,7 +252,7 @@ namespace hb.network.FTP
                 {
                     throw new FileNotFoundException(string.Format("本地文件不存在:{0}!", localFilePath));
                 }
-                
+
                 FtpWebRequest request = CreateRequest(new Uri(this.Uri + remoteFilePath), WebRequestMethods.Ftp.UploadFile);
                 request.ContentLength = fileInf.Length;
                 total = fileInf.Length;
@@ -536,10 +280,7 @@ namespace hb.network.FTP
             }
             catch (System.Exception ex)
             {
-                this.Exception = ex;
-                this.ErrorMsg = ex.Message;
-                throw new Exception(string.Format("{0}上传文件失败，原因:{1}!", localFilePath, ex.Message));
-
+                throw ex;
             }
 
         }
@@ -586,10 +327,7 @@ namespace hb.network.FTP
                             }
                             catch (WebException ex)
                             {
-                                if (this.StatusCode != FtpStatusCode.ActionNotTakenFileUnavailable)
-                                {
-                                    throw ex;
-                                }
+                                throw ex;
                             }
                         }
                         parentDirector += director;
@@ -599,10 +337,8 @@ namespace hb.network.FTP
             }
             catch (WebException ex)
             {
-                this.Exception = ex;
-                this.ErrorMsg = ex.Message;
+                throw ex;
             }
-            return false;
         }
 
         /// <summary>
@@ -641,8 +377,6 @@ namespace hb.network.FTP
             {
                 List<FileStruct> list = new List<FileStruct>();
                 string str = null;
-                //WebRequestMethods.Ftp.ListDirectoryDetails可以列出所有的文件和目录列表
-                //WebRequestMethods.Ftp.ListDirectory只能列出目录的文件列表
                 FtpWebResponse response = CreateResponse(new Uri(this.Uri.ToString() + direcotry), WebRequestMethods.Ftp.ListDirectoryDetails);
                 Stream stream = response.GetResponseStream();
 
@@ -775,6 +509,65 @@ namespace hb.network.FTP
             }
             f.Name = processstr;
             return f;
+        }
+
+        /// <summary>
+        /// 检测目录并创建
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="isCreateDir"></param>
+        /// <returns></returns>
+        private bool CheckCreateDir(string path, bool isCreateDir = false)
+        {
+            if (!Directory.Exists(path))
+            {
+                if (isCreateDir) Directory.CreateDirectory(path);
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 删除文件
+        /// </summary>
+        /// <param name="filename"></param>
+        private void DeleteFile(string filename)
+        {
+            if (string.IsNullOrEmpty(filename))
+            {
+                throw new ArgumentNullException("filename");
+            }
+
+            try
+            {
+                if (File.Exists(filename))
+                {
+                    FileInfo fileInfo = new FileInfo(filename);
+                    if ((fileInfo.Attributes & FileAttributes.ReadOnly) > 0)
+                        fileInfo.Attributes ^= FileAttributes.ReadOnly;
+                    fileInfo.Delete();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 删除指定目录中的所有文件
+        /// </summary>
+        /// <param name="path"></param>
+        private void DeleteFiles(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+                foreach (var item in files)
+                {
+                    DeleteFile(item);
+                }
+            }
         }
         #endregion
 

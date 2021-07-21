@@ -26,7 +26,7 @@ namespace hb.tests
             string file = "d:/a.txt";
             string value1 = MD5Utils.GetMD5File(file);
 
-            byte[] bytes = null;
+            byte[] bytes = new byte[0];
             string value2 = MD5Utils.GetMd5Bytes(bytes);
 
             Assert.IsTrue(value1 == value2);

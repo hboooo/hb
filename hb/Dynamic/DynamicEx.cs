@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace hb.Dynamic
@@ -14,7 +11,7 @@ namespace hb.Dynamic
     /// <summary>
     /// author     :habo
     /// date       :2021/7/20 1:50:55
-    /// description:
+    /// description:动态对象，动态绑定
     /// </summary>
 
     public class DynamicEx : DynamicObject, INotifyPropertyChanged
@@ -47,9 +44,6 @@ namespace hb.Dynamic
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
             if (value != null && value.GetType() == typeof(JArray))
-                //
-                // 说明:
-                //     转换成List,否则DataGrid无法排序
                 members[binder.Name] = DynamicJson.DeserializeObject<List<object>>(DynamicJson.SerializeObject(value));
             else
                 members[binder.Name] = value;
