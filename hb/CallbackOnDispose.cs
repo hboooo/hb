@@ -8,15 +8,15 @@ namespace hb
     /// </summary>
     public sealed class CallbackOnDispose : IDisposable
     {
-        private Action _action;
+        private Action _callback;
 
-        public CallbackOnDispose(Action action)
+        public CallbackOnDispose(Action callback)
         {
-            this._action = action ?? throw new ArgumentNullException("action");
+            this._callback = callback ?? throw new ArgumentNullException("callback");
         }
         public void Dispose()
         {
-            Interlocked.Exchange(ref _action, null)?.Invoke();
+            Interlocked.Exchange(ref _callback, null)?.Invoke();
         }
     }
 }
