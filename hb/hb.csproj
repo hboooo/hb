@@ -75,7 +75,11 @@
     <Compile Include="LogServices\NLogLoggingService.cs" />
     <Compile Include="MD5Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Snowflake.cs" />
     <Compile Include="StringExtension.cs" />
+    <Compile Include="TaskPro.cs" />
+    <Compile Include="TaskQueue.cs" />
+    <Compile Include="TimerPro.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

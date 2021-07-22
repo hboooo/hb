@@ -54,6 +54,7 @@
     <Compile Include="IPUnitTest.cs" />
     <Compile Include="JsonUnitTest.cs" />
     <Compile Include="HttpUnitTest.cs" />
+    <Compile Include="SnowflakeUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
