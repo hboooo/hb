@@ -47,7 +47,7 @@ namespace hb.network.HTTP
         /// <returns></returns>
         public Rest SetUrl(string url)
         {
-            _url = url ?? throw new ArgumentNullException("url");
+            _url = url ?? throw new ArgumentNullException(nameof(url));
             _restClient.BaseUrl = new Uri(_url);
             return this;
         }
@@ -60,7 +60,7 @@ namespace hb.network.HTTP
         /// <returns></returns>
         public Rest SetHost(string host)
         {
-            _host = host ?? throw new ArgumentNullException("host");
+            _host = host ?? throw new ArgumentNullException(nameof(host));
             return this;
         }
 
@@ -73,7 +73,7 @@ namespace hb.network.HTTP
         public Rest SetPath(string path)
         {
             if (string.IsNullOrEmpty(_host)) throw new ArgumentNullException("host", "host must be set first");
-            _path = path ?? throw new ArgumentNullException("path");
+            _path = path ?? throw new ArgumentNullException(nameof(path));
             _restClient.BaseUrl = new Uri(_host + _path);
             return this;
         }

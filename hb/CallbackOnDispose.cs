@@ -12,7 +12,7 @@ namespace hb
 
         public CallbackOnDispose(Action callback)
         {
-            this._callback = callback ?? throw new ArgumentNullException("callback");
+            this._callback = callback ?? throw new ArgumentNullException(nameof(callback));
         }
         public void Dispose()
         {

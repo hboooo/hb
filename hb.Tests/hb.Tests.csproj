@@ -55,6 +55,8 @@
     <Compile Include="JsonUnitTest.cs" />
     <Compile Include="HttpUnitTest.cs" />
     <Compile Include="SnowflakeUnitTest.cs" />
+    <Compile Include="TaskUnitTest.cs" />
+    <Compile Include="SerialPortUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

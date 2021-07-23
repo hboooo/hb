@@ -47,13 +47,15 @@
   <ItemGroup>
     <Compile Include="FTP\FileStruct.cs" />
     <Compile Include="FTP\FtpHelper.cs" />
-    <Compile Include="HTTP\HttpHelper.cs" />
     <Compile Include="HTTP\Rest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serial\SerialOptions.cs" />
+    <Compile Include="Serial\SerialPortPro.cs" />
+    <Compile Include="Serial\SerialPortPro.Event.cs" />
+    <Compile Include="Serial\SerialPortPro.Static.cs" />
+    <Compile Include="SMTP\MailProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Serial\" />
-    <Folder Include="SMTP\" />
     <Folder Include="TCP\" />
     <Folder Include="UDP\" />
     <Folder Include="WS\" />

@@ -14,7 +14,7 @@ namespace hb
         {
             if (string.IsNullOrEmpty(@this))
             {
-                throw new ArgumentNullException("@this");
+                throw new ArgumentNullException(nameof(@this));
             }
             return ToHexString(encode.GetBytes(@this));
         }
@@ -23,9 +23,26 @@ namespace hb
         {
             if (bytes == null)
             {
-                throw new ArgumentNullException("bytes");
+                throw new ArgumentNullException(nameof(bytes));
             }
             return BitConverter.ToString(bytes).Replace("-", "");
         }
+
+        /// <summary>
+		/// Hexadecimal string to an byte array.
+		/// </summary>
+		/// <param name="hex">The hex string.</param>
+		/// <returns>An byte array.</returns>
+		public static byte[] HexToByte(this string hex)
+        {
+            byte[] bytes = new byte[hex.Length / 2];
+            for (int i = 0; i < hex.Length; i += 2)
+            {
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            }
+            return bytes;
+        }
+
+
     }
 }

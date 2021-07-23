@@ -54,7 +54,7 @@ namespace hb
         {
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
             if (threadCount < 1)
             {

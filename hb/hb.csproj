@@ -68,6 +68,7 @@
     <Compile Include="Dynamic\DynamicJson.cs" />
     <Compile Include="Dynamic\DynamicEx.cs" />
     <Compile Include="Dynamic\DynamicUtils.cs" />
+    <Compile Include="IEnumerableExtension.cs" />
     <Compile Include="IPUtils.cs" />
     <Compile Include="LogServices\ILoggingService.cs" />
     <Compile Include="LogServices\Log4netLoggingService.cs" />

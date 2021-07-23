@@ -55,7 +55,7 @@ namespace hb
         {
             if (string.IsNullOrEmpty(com))
             {
-                throw new ArgumentNullException("com");
+                throw new ArgumentNullException(nameof(com));
             }
 
             string[] coms = SerialPort.GetPortNames();

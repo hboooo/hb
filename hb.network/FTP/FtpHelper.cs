@@ -40,9 +40,9 @@ namespace hb.network.FTP
         #region 构造函数
         public FtpHelper(Uri uri, string username, string password, string encode = "utf-8")
         {
-            this.Uri = uri ?? throw new ArgumentNullException("uri");
-            this.UserName = username ?? throw new ArgumentNullException("username");
-            this.Password = password ?? throw new ArgumentNullException("password");
+            this.Uri = uri ?? throw new ArgumentNullException(nameof(uri));
+            this.UserName = username ?? throw new ArgumentNullException(nameof(username));
+            this.Password = password ?? throw new ArgumentNullException(nameof(password));
             this.Encode = Encoding.GetEncoding(encode);
         }
 
@@ -535,7 +535,7 @@ namespace hb.network.FTP
         {
             if (string.IsNullOrEmpty(filename))
             {
-                throw new ArgumentNullException("filename");
+                throw new ArgumentNullException(nameof(filename));
             }
 
             try

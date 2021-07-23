@@ -45,7 +45,7 @@ namespace hb
         {
             if (bytes == null)
             {
-                throw new ArgumentNullException("bytes");
+                throw new ArgumentNullException(nameof(bytes));
             }
 
             MD5 md5 = new MD5CryptoServiceProvider();
@@ -62,7 +62,7 @@ namespace hb
         {
             if (@this == null)
             {
-                throw new ArgumentNullException("@this");
+                throw new ArgumentNullException(nameof(@this));
             }
 
             return @this.GetMd5String(Encoding.Default);
@@ -77,7 +77,7 @@ namespace hb
         {
             if (@this == null)
             {
-                throw new ArgumentNullException("@this");
+                throw new ArgumentNullException(nameof(@this));
             }
 
             byte[] bytes = encode.GetBytes(@this);
@@ -93,7 +93,7 @@ namespace hb
         {
             if (bytes == null)
             {
-                throw new ArgumentNullException("bytes");
+                throw new ArgumentNullException(nameof(bytes));
             }
 
             return BitConverter.ToString(bytes).Replace("-", "");
