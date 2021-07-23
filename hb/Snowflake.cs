@@ -163,20 +163,11 @@ namespace hb
         /// <returns></returns>
         public DateTime TakeDateTime(long sid)
         {
-            long temp = sid >> 22;
-            long unixTime = epoch + temp;
-            return ConvertToDateTime(unixTime);
+            long temp = sid >> timestampLeftShift;
+            long timestamp = epoch + temp;
+            return timestamp.ToDateTime(true);
         }
 
-        /// 将Unix时间戳转换为DateTime类型时间
-        /// </summary>
-        /// <param name="d">double 型数字</param>
-        /// <returns>DateTime</returns>
-        private DateTime ConvertToDateTime(long unixTime)
-        {
-            DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
-            return startTime.AddMilliseconds(unixTime);
-        }
     }
 
     public static class SnowflakeSystem

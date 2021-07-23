@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallbackOnDispose.cs" />
+    <Compile Include="DateTimeExtension.cs" />
     <Compile Include="DebugTimer.cs" />
     <Compile Include="Dynamic\DynamicJson.cs" />
     <Compile Include="Dynamic\DynamicEx.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="TaskPro.cs" />
     <Compile Include="TaskQueue.cs" />
     <Compile Include="TimerPro.cs" />
+    <Compile Include="ZipCompression.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
