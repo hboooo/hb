@@ -16,16 +16,7 @@ namespace hb
             {
                 throw new ArgumentNullException(nameof(@this));
             }
-            return ToHexString(encode.GetBytes(@this));
-        }
-
-        public static string ToHexString(this byte[] bytes)
-        {
-            if (bytes == null)
-            {
-                throw new ArgumentNullException(nameof(bytes));
-            }
-            return BitConverter.ToString(bytes).Replace("-", "");
+            return encode.GetBytes(@this).ToHexString();
         }
 
         /// <summary>

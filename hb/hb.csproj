@@ -45,6 +45,7 @@
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.7.10\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -63,6 +64,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AESHelper.cs" />
+    <Compile Include="BytesExtension.cs" />
     <Compile Include="CallbackOnDispose.cs" />
     <Compile Include="DateTimeExtension.cs" />
     <Compile Include="DebugTimer.cs" />
@@ -76,7 +79,10 @@
     <Compile Include="LogServices\Logger.cs" />
     <Compile Include="LogServices\NLogLoggingService.cs" />
     <Compile Include="MD5Utils.cs" />
+    <Compile Include="ProcessExec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegistryPro.cs" />
+    <Compile Include="RSAHelper.cs" />
     <Compile Include="Snowflake.cs" />
     <Compile Include="StringExtension.cs" />
     <Compile Include="TaskPro.cs" />

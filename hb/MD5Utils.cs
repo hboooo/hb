@@ -17,7 +17,7 @@ namespace hb
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        public static string GetMD5File(string fileName)
+        public static string GetFileMD5(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
             {
@@ -32,7 +32,7 @@ namespace hb
             {
                 MD5 md5 = new MD5CryptoServiceProvider();
                 byte[] output = md5.ComputeHash(file);
-                return BytesToHexString(output);
+                return Convert.ToBase64String(output);
             }
         }
 
@@ -41,7 +41,7 @@ namespace hb
         /// </summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
-        public static string GetMd5Bytes(this byte[] bytes)
+        public static string GetBytesMD5(this byte[] bytes)
         {
             if (bytes == null)
             {
@@ -50,7 +50,7 @@ namespace hb
 
             MD5 md5 = new MD5CryptoServiceProvider();
             byte[] output = md5.ComputeHash(bytes);
-            return BytesToHexString(output);
+            return Convert.ToBase64String(output);
         }
 
         /// <summary>
@@ -58,14 +58,9 @@ namespace hb
         /// </summary>
         /// <param name="this"></param>
         /// <returns></returns>
-        public static string GetMd5String(this string @this)
+        public static string GetStringMD5(this string @this)
         {
-            if (@this == null)
-            {
-                throw new ArgumentNullException(nameof(@this));
-            }
-
-            return @this.GetMd5String(Encoding.Default);
+            return @this.GetStringMD5(Encoding.UTF8);
         }
 
         /// <summary>
@@ -73,7 +68,7 @@ namespace hb
         /// </summary>
         /// <param name="this">指定string的编码格式</param>
         /// <returns></returns>
-        public static string GetMd5String(this string @this, Encoding encode)
+        public static string GetStringMD5(this string @this, Encoding encode)
         {
             if (@this == null)
             {
@@ -81,22 +76,8 @@ namespace hb
             }
 
             byte[] bytes = encode.GetBytes(@this);
-            return GetMd5Bytes(bytes);
+            return GetBytesMD5(bytes);
         }
 
-        /// <summary>
-        /// byte[]转16进制字符串
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <returns></returns>
-        private static string BytesToHexString(byte[] bytes)
-        {
-            if (bytes == null)
-            {
-                throw new ArgumentNullException(nameof(bytes));
-            }
-
-            return BitConverter.ToString(bytes).Replace("-", "");
-        }
     }
 }

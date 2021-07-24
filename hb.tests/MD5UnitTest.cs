@@ -11,10 +11,10 @@ namespace hb.tests
         {
             //说明：先创建空文件d:/a.txt
             string file = "d:/a.txt";
-            string value1 = MD5Utils.GetMD5File(file);
+            string value1 = MD5Utils.GetFileMD5(file);
 
             string test = "";
-            string value2 = MD5Utils.GetMd5String(test);
+            string value2 = MD5Utils.GetStringMD5(test);
 
             Assert.IsTrue(value1 == value2);
         }
@@ -24,10 +24,10 @@ namespace hb.tests
         {
             //说明：先创建空文件d:/a.txt
             string file = "d:/a.txt";
-            string value1 = MD5Utils.GetMD5File(file);
+            string value1 = MD5Utils.GetFileMD5(file);
 
             byte[] bytes = new byte[0];
-            string value2 = MD5Utils.GetMd5Bytes(bytes);
+            string value2 = MD5Utils.GetBytesMD5(bytes);
 
             Assert.IsTrue(value1 == value2);
         }

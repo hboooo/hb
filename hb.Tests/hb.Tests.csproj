@@ -57,6 +57,9 @@
     <Compile Include="SnowflakeUnitTest.cs" />
     <Compile Include="TaskUnitTest.cs" />
     <Compile Include="SerialPortUnitTest.cs" />
+    <Compile Include="GeneralUnitTest.cs" />
+    <Compile Include="AesUnitTest.cs" />
+    <Compile Include="RSAUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
