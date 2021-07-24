@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace UpdateAssemblyInfo
@@ -15,43 +12,17 @@ namespace UpdateAssemblyInfo
     class Program
     {
         const int BaseCommitRev = 0;
-        static string slnFile = "";
-
-        const string globalAssemblyInfoTemplateFile = "GlobalAssemblyInfo.cs.template";
-
-        static readonly TemplateFile[] templateFiles =
-        {
-            new TemplateFile
-            {
-                Input = globalAssemblyInfoTemplateFile,
-                Output = globalAssemblyInfoTemplateFile.Replace(".template","")
-            }
-        };
-
-        class TemplateFile
-        {
-            public string Input, Output;
-        }
-
+        static string gitBranchName;
+        static TemplateFile templateFile = null;
+        static PV pv = null;
         static int Main(string[] args)
         {
             try
             {
-                BuildEnvironment(args);
-
-                string exeDir = Path.GetDirectoryName(typeof(Program).Assembly.Location);
-                string tempProject = GetProjectSlnFile(exeDir);
-                if (!string.IsNullOrEmpty(tempProject))
-                {
-                    slnFile = tempProject;
-                }
-                if (!File.Exists(slnFile))
-                {
-                    Console.WriteLine($"sln file {slnFile} can not find");
-                    return 2;
-                }
-                string workDir = Path.GetDirectoryName(slnFile);
-                Directory.SetCurrentDirectory(workDir);
+                var ret = BuildEnvironment(args);
+                if (ret != 0) return ret;
+                ret = BuildTemplateFiles();
+                if (ret != 0) return ret;
 
                 bool createNew;
                 using (Mutex mutex = new Mutex(true, "UpdateAssemblyInfo", out createNew))
@@ -70,12 +41,8 @@ namespace UpdateAssemblyInfo
                     }
 
                     RetrieveRevisionNumber();
-                    for (int i = 0; i < args.Length; i++)
-                    {
-                        if (args[i] == "--branchname" && i + 1 < args.Length && !string.IsNullOrEmpty(args[i + 1]))
-                            gitBranchName = args[i + 1];
-                    }
                     UpdateFiles();
+                    SaveRevision();
                 }
 
                 return 0;
@@ -87,55 +54,100 @@ namespace UpdateAssemblyInfo
             }
         }
 
-        static void UpdateFiles()
+        static int BuildWorkDirectory()
         {
-            TemplateFile[] updateTemplateFiles = templateFiles;
-            foreach (var file in updateTemplateFiles)
+            string exeDir = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            string slnPath = GetProjectSlnFile(exeDir);
+            if (string.IsNullOrEmpty(slnPath))
             {
-                string content;
-                using (StreamReader r = new StreamReader(file.Input))
-                {
-                    content = r.ReadToEnd();
-                }
-                content = content.Replace("$INSERTVERSION$", fullVersionNumber);
-                content = content.Replace("$INSERTMAJORVERSION$", majorVersionNumber);
-                content = content.Replace("$INSERTREVISION$", revisionNumber);
-                content = content.Replace("$INSERTCOMMITHASH$", gitCommitHash);
-                content = content.Replace("$INSERTSHORTCOMMITHASH$", gitCommitHash.Substring(0, 8));
-                content = content.Replace("$INSERTDATE$", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture));
-                content = content.Replace("$INSERTYEAR$", DateTime.Now.Year.ToString());
-                content = content.Replace("$INSERTBRANCHNAME$", gitBranchName);
-                bool isDefaultBranch = string.IsNullOrEmpty(gitBranchName) || gitBranchName == "master";
-                content = content.Replace("$INSERTBRANCHPOSTFIX$", isDefaultBranch ? "" : ("-" + gitBranchName));
+                Console.WriteLine($".sln file can not find, please run in project folder");
+                return 11;
+            }
 
-                content = content.Replace("$INSERTVERSIONNAME$", versionName ?? "");
-                content = content.Replace("$INSERTVERSIONNAMEPOSTFIX$", string.IsNullOrEmpty(versionName) ? "" : "-" + versionName);
-                content = content.Replace("$MODULENAME$", moduleName);
-
-                if (File.Exists(file.Output))
+            string workDir = Path.GetDirectoryName(slnPath);
+            if (string.IsNullOrEmpty(workDir))
+            {
+                if (!File.Exists(slnPath))
                 {
-                    using (StreamReader r = new StreamReader(file.Output))
-                    {
-                        if (r.ReadToEnd() == content)
-                        {
-                            continue;
-                        }
-                    }
-                }
-                using (StreamWriter w = new StreamWriter(file.Output, false, Encoding.UTF8))
-                {
-                    w.Write(content);
+                    Console.WriteLine($"pro param .sln file [{slnPath}] can not find");
+                    return 2;
                 }
             }
+            Directory.SetCurrentDirectory(workDir);
+            return 0;
         }
 
+        static int BuildTemplateFiles()
+        {
+            string template = pv[PT.tmp];
+            if (string.IsNullOrEmpty(template))
+            {
+                template = "GlobalAssemblyInfo.cs.template";
+            }
+            if (!File.Exists(template))
+            {
+                Console.WriteLine($".template file can not find, please run in project folder");
+                return 12;
+            }
+            templateFile = new TemplateFile()
+            {
+                Input = template,
+                Output = template.Replace(".template", "")
+            };
+            return 0;
+        }
+
+        static void UpdateFiles()
+        {
+            string content;
+            using (StreamReader r = new StreamReader(templateFile.Input))
+            {
+                content = r.ReadToEnd();
+            }
+            content = content.Replace("$INSERTVERSION$", fullVersionNumber);
+            content = content.Replace("$INSERTMAJORVERSION$", majorVersionNumber);
+            content = content.Replace("$INSERTREVISION$", revisionNumber);
+            content = content.Replace("$INSERTCOMMITHASH$", gitCommitHash);
+            content = content.Replace("$INSERTSHORTCOMMITHASH$", gitCommitHash.Substring(0, 8));
+            content = content.Replace("$INSERTDATE$", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+            content = content.Replace("$INSERTYEAR$", DateTime.Now.Year.ToString());
+            content = content.Replace("$INSERTBRANCHNAME$", gitBranchName);
+            bool isDefaultBranch = string.IsNullOrEmpty(gitBranchName) || gitBranchName == "master";
+            content = content.Replace("$INSERTBRANCHPOSTFIX$", isDefaultBranch ? "" : ("-" + gitBranchName));
+
+            content = content.Replace("$INSERTVERSIONNAME$", versionName ?? "");
+            content = content.Replace("$INSERTVERSIONNAMEPOSTFIX$", string.IsNullOrEmpty(versionName) ? "" : "-" + versionName);
+            content = content.Replace("$MODULENAME$", pv[PT.mod]);
+
+            if (File.Exists(templateFile.Output))
+            {
+                using (StreamReader r = new StreamReader(templateFile.Output))
+                {
+                    if (r.ReadToEnd() == content)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            string outputFile;
+            if (!string.IsNullOrEmpty(pv[PT.@out]))
+                outputFile = pv[PT.@out];
+            else
+                outputFile = templateFile.Output;
+            using (StreamWriter w = new StreamWriter(outputFile, false, Encoding.UTF8))
+            {
+                w.Write(content);
+            }
+
+        }
 
         static void GetMajorVersion()
         {
             majorVersionNumber = "?";
             fullVersionNumber = "?";
             versionName = null;
-            using (StreamReader r = new StreamReader(globalAssemblyInfoTemplateFile))
+            using (StreamReader r = new StreamReader(templateFile.Input))
             {
                 string line;
                 while ((line = r.ReadLine()) != null)
@@ -172,34 +184,11 @@ namespace UpdateAssemblyInfo
             }
         }
 
-        static void SetVersionInfo(string fileName, Regex regex, string replacement)
-        {
-            string content;
-            using (StreamReader inFile = new StreamReader(fileName))
-            {
-                content = inFile.ReadToEnd();
-            }
-            string newContent = regex.Replace(content, replacement);
-            if (newContent == content)
-                return;
-            using (StreamWriter outFile = new StreamWriter(fileName, false, Encoding.UTF8))
-            {
-                outFile.Write(newContent);
-            }
-        }
-
-        #region Retrieve Revision Number
-
-
         static string revisionNumber;
         static string majorVersionNumber;
         static string fullVersionNumber;
         static string versionName;
         static string gitCommitHash;
-        static string gitBranchName;
-        static string gitFolder;
-        static string moduleName;
-        public static string outAssemblyName;
 
         static void RetrieveRevisionNumber()
         {
@@ -227,12 +216,17 @@ namespace UpdateAssemblyInfo
             {
                 ReadRevisionFromFile();
             }
+            if (!string.IsNullOrEmpty(pv[PT.bra]))
+            {
+                gitBranchName = pv[PT.bra];
+            }
             GetMajorVersion();
         }
 
-        static void ReadRevisionNumberFromGit()
+        static int ReadRevisionNumberFromGit()
         {
-            ProcessStartInfo info = new ProcessStartInfo("cmd", string.Format("/c git log --pretty=\"%H\" {0}", string.IsNullOrEmpty(gitFolder) ? "" : gitFolder));
+            string folder = string.IsNullOrEmpty(pv[PT.dir]) ? "" : pv[PT.dir];
+            ProcessStartInfo info = new ProcessStartInfo("cmd", string.Format("/c git log --pretty=\"%H\" {0}", folder));
             string path = Environment.GetEnvironmentVariable("PATH");
             path += ";" + Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "git\\bin");
             info.EnvironmentVariables["PATH"] = path;
@@ -255,6 +249,7 @@ namespace UpdateAssemblyInfo
                     throw new Exception("git-rev-list exit code was " + p.ExitCode);
                 revisionNumber = revNum.ToString();
             }
+            return 0;
         }
 
         static void ReadBranchNameFromGit()
@@ -308,6 +303,22 @@ namespace UpdateAssemblyInfo
             }
         }
 
+        static void SaveRevision()
+        {
+            if (pv.Contains(PT.ver))
+            {
+                var doc = new XDocument(new XElement(
+                            "versionInfo",
+                            new XElement("version", fullVersionNumber),
+                            new XElement("revision", revisionNumber),
+                            new XElement("commitHash", gitCommitHash),
+                            new XElement("branchName", gitBranchName),
+                            new XElement("versionName", versionName)
+                        ));
+                doc.Save("REVISION");
+            }
+        }
+
         static string GetProjectSlnFile(string workDir)
         {
             try
@@ -319,7 +330,7 @@ namespace UpdateAssemblyInfo
                     previous += "../";
                     string previousPath = Path.GetFullPath(Path.Combine(workDir, previous));
                     files = Directory.GetFiles(previousPath, "*.sln");
-                    if (Directory.Exists(previousPath)) break;
+                    if (!Directory.Exists(previousPath)) return null;
                 }
                 return files[0];
             }
@@ -330,24 +341,126 @@ namespace UpdateAssemblyInfo
             return null;
         }
 
-        static void BuildEnvironment(string[] args)
+        static int BuildEnvironment(string[] args)
         {
+            pv = new PV();
             for (int i = 0; i < args.Length; i++)
             {
-                if (args[i] == "--project" && i + 1 < args.Length && !string.IsNullOrEmpty(args[i + 1]))
-                    gitFolder = args[i + 1];
-                if (args[i] == "--folder" && i + 1 < args.Length && !string.IsNullOrEmpty(args[i + 1]))
-                    gitFolder = args[i + 1];
-                if (args[i] == "--assName" && i + 1 < args.Length && !string.IsNullOrEmpty(args[i + 1]))
-                    outAssemblyName = args[i + 1];
-                if (args[i] == "--output" && i + 1 < args.Length && !string.IsNullOrEmpty(args[i + 1]))
-                    outputFolder = args[i + 1];
-                if (args[i] == "--moduleName" && i + 1 < args.Length && !string.IsNullOrEmpty(args[i + 1]))
-                    moduleName = args[i + 1];
+                string value = null;
+                if (i + 1 < args.Length)
+                {
+                    if (!args[i + 1].StartsWith("--"))
+                        value = args[i + 1];
+                }
+                pv[args[i].Replace("--", "")] = value;
+            }
+
+            var ret = BuildWorkDirectory();
+            if (ret != 0) return ret;
+
+            if (pv.Contains(PT.tmp) && !File.Exists(pv[PT.tmp]))
+            {
+                Console.WriteLine($"tmp param .template file [{pv[PT.tmp]}] can not find");
+                return 3;
+            }
+            if (pv.Contains(PT.dir) && !Directory.Exists(pv[PT.dir]))
+            {
+                Console.WriteLine($"dir param path [{pv[PT.dir]}] does not exists");
+                return 4;
+            }
+            if (pv.Contains(PT.@out) && string.IsNullOrEmpty(pv[PT.@out]))
+            {
+                Console.WriteLine($"out param [{pv[PT.@out]}] cannot be empty");
+                return 4;
+            }
+            if (pv.Contains(PT.mod) && string.IsNullOrEmpty(pv[PT.mod]))
+            {
+                Console.WriteLine($"mod param [{pv[PT.mod]}] cannot be empty");
+                return 5;
+            }
+            if (pv.Contains(PT.bra) && string.IsNullOrEmpty(pv[PT.bra]))
+            {
+                Console.WriteLine($"bra param [{pv[PT.bra]}] cannot be empty");
+                return 6;
+            }
+
+            return 0;
+        }
+
+
+        class TemplateFile
+        {
+            public string Input, Output;
+        }
+
+        class PV
+        {
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+
+            HashSet<string> pl = new HashSet<string>();
+            public PV()
+            {
+                InitPT();
+            }
+
+            private void InitPT()
+            {
+                foreach (var item in Enum.GetValues(typeof(PT)))
+                {
+                    pl.Add(item.ToString());
+                }
+            }
+
+            public bool Contains(PT pt)
+            {
+                return dic.ContainsKey(pt.ToString());
+            }
+
+            public string this[string pt]
+            {
+                set
+                {
+                    if (pl.Contains(pt))
+                        dic[pt] = value;
+                }
+                get
+                {
+                    if (dic.ContainsKey(pt))
+                        return dic[pt];
+                    return null;
+                }
+            }
+
+            public string this[PT pt]
+            {
+                set
+                {
+                    if (pl.Contains(pt.ToString()))
+                        dic[pt.ToString()] = value;
+                }
+                get
+                {
+                    if (dic.ContainsKey(pt.ToString()))
+                        return dic[pt.ToString()];
+                    return null;
+                }
             }
         }
 
-        #endregion
-
+        enum PT
+        {
+            //.template file
+            tmp,
+            //git folder
+            dir,
+            //output assemblyInfo.cs file dir
+            @out,
+            //module name
+            mod,
+            //branch name
+            bra,
+            //is output revision file
+            ver
+        }
     }
 }

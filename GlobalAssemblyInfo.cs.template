@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-// 此文件为自动生成，不要手动修改，如需修改版本号，请修改项目根目录中GlobalAssemblyInfo.cs.template文件
+// 此文件为自动生成，不要手动修改，有Major,Minor,Build版本更新时修改项目根目录中*AssemblyInfo.cs.template文件
 
 [assembly: System.Runtime.InteropServices.ComVisible(false)]
 [assembly: AssemblyTitle("hbo")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion(RevisionClass.Major + "." + RevisionClass.Minor + "." + RevisionClass.Build + ".0")]
 [assembly: AssemblyInformationalVersion(RevisionClass.FullVersion + "-$INSERTSHORTCOMMITHASH$")]
 
-// 有大版本更新时手动编辑此模板
+// 有Major,Minor,Build版本更新时修改项目根目录中*AssemblyInfo.cs.template文件
 internal static class RevisionClass
 {
 	public const string Major = "1";
