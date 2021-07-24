@@ -14,7 +14,7 @@ namespace UpdateAssemblyInfo
         const int BaseCommitRev = 0;
         static string gitBranchName;
         static TemplateFile templateFile = null;
-        static PV pv = null;
+        static Params pa = null;
         static int Main(string[] args)
         {
             try
@@ -79,7 +79,7 @@ namespace UpdateAssemblyInfo
 
         static int BuildTemplateFiles()
         {
-            string template = pv[PT.tmp];
+            string template = pa[Word.tmp];
             if (string.IsNullOrEmpty(template))
             {
                 template = "GlobalAssemblyInfo.cs.template";
@@ -117,7 +117,7 @@ namespace UpdateAssemblyInfo
 
             content = content.Replace("$INSERTVERSIONNAME$", versionName ?? "");
             content = content.Replace("$INSERTVERSIONNAMEPOSTFIX$", string.IsNullOrEmpty(versionName) ? "" : "-" + versionName);
-            content = content.Replace("$MODULENAME$", pv[PT.mod]);
+            content = content.Replace("$MODULENAME$", pa[Word.mod]);
 
             if (File.Exists(templateFile.Output))
             {
@@ -131,8 +131,8 @@ namespace UpdateAssemblyInfo
             }
 
             string outputFile;
-            if (!string.IsNullOrEmpty(pv[PT.@out]))
-                outputFile = pv[PT.@out];
+            if (!string.IsNullOrEmpty(pa[Word.@out]))
+                outputFile = pa[Word.@out];
             else
                 outputFile = templateFile.Output;
             using (StreamWriter w = new StreamWriter(outputFile, false, Encoding.UTF8))
@@ -216,16 +216,16 @@ namespace UpdateAssemblyInfo
             {
                 ReadRevisionFromFile();
             }
-            if (!string.IsNullOrEmpty(pv[PT.bra]))
+            if (!string.IsNullOrEmpty(pa[Word.bra]))
             {
-                gitBranchName = pv[PT.bra];
+                gitBranchName = pa[Word.bra];
             }
             GetMajorVersion();
         }
 
         static int ReadRevisionNumberFromGit()
         {
-            string folder = string.IsNullOrEmpty(pv[PT.dir]) ? "" : pv[PT.dir];
+            string folder = string.IsNullOrEmpty(pa[Word.dir]) ? "" : pa[Word.dir];
             ProcessStartInfo info = new ProcessStartInfo("cmd", string.Format("/c git log --pretty=\"%H\" {0}", folder));
             string path = Environment.GetEnvironmentVariable("PATH");
             path += ";" + Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "git\\bin");
@@ -305,7 +305,7 @@ namespace UpdateAssemblyInfo
 
         static void SaveRevision()
         {
-            if (pv.Contains(PT.ver))
+            if (pa.Contains(Word.ver))
             {
                 var doc = new XDocument(new XElement(
                             "versionInfo",
@@ -343,7 +343,7 @@ namespace UpdateAssemblyInfo
 
         static int BuildEnvironment(string[] args)
         {
-            pv = new PV();
+            pa = new Params();
             for (int i = 0; i < args.Length; i++)
             {
                 string value = null;
@@ -352,35 +352,35 @@ namespace UpdateAssemblyInfo
                     if (!args[i + 1].StartsWith("--"))
                         value = args[i + 1];
                 }
-                pv[args[i].Replace("--", "")] = value;
+                pa[args[i].Replace("--", "")] = value;
             }
 
             var ret = BuildWorkDirectory();
             if (ret != 0) return ret;
 
-            if (pv.Contains(PT.tmp) && !File.Exists(pv[PT.tmp]))
+            if (pa.Contains(Word.tmp) && !File.Exists(pa[Word.tmp]))
             {
-                Console.WriteLine($"tmp param .template file [{pv[PT.tmp]}] can not find");
+                Console.WriteLine($"tmp param .template file [{pa[Word.tmp]}] can not find");
                 return 3;
             }
-            if (pv.Contains(PT.dir) && !Directory.Exists(pv[PT.dir]))
+            if (pa.Contains(Word.dir) && !Directory.Exists(pa[Word.dir]))
             {
-                Console.WriteLine($"dir param path [{pv[PT.dir]}] does not exists");
+                Console.WriteLine($"dir param path [{pa[Word.dir]}] does not exists");
                 return 4;
             }
-            if (pv.Contains(PT.@out) && string.IsNullOrEmpty(pv[PT.@out]))
+            if (pa.Contains(Word.@out) && string.IsNullOrEmpty(pa[Word.@out]))
             {
-                Console.WriteLine($"out param [{pv[PT.@out]}] cannot be empty");
+                Console.WriteLine($"out param [{pa[Word.@out]}] cannot be empty");
                 return 4;
             }
-            if (pv.Contains(PT.mod) && string.IsNullOrEmpty(pv[PT.mod]))
+            if (pa.Contains(Word.mod) && string.IsNullOrEmpty(pa[Word.mod]))
             {
-                Console.WriteLine($"mod param [{pv[PT.mod]}] cannot be empty");
+                Console.WriteLine($"mod param [{pa[Word.mod]}] cannot be empty");
                 return 5;
             }
-            if (pv.Contains(PT.bra) && string.IsNullOrEmpty(pv[PT.bra]))
+            if (pa.Contains(Word.bra) && string.IsNullOrEmpty(pa[Word.bra]))
             {
-                Console.WriteLine($"bra param [{pv[PT.bra]}] cannot be empty");
+                Console.WriteLine($"bra param [{pa[Word.bra]}] cannot be empty");
                 return 6;
             }
 
@@ -393,61 +393,61 @@ namespace UpdateAssemblyInfo
             public string Input, Output;
         }
 
-        class PV
+        class Params
         {
-            Dictionary<string, string> dic = new Dictionary<string, string>();
+            Dictionary<string, string> _params = new Dictionary<string, string>();
 
-            HashSet<string> pl = new HashSet<string>();
-            public PV()
+            HashSet<string> _words = new HashSet<string>();
+            public Params()
             {
-                InitPT();
+                InitWords();
             }
 
-            private void InitPT()
+            private void InitWords()
             {
-                foreach (var item in Enum.GetValues(typeof(PT)))
+                foreach (var item in Enum.GetValues(typeof(Word)))
                 {
-                    pl.Add(item.ToString());
+                    _words.Add(item.ToString());
                 }
             }
 
-            public bool Contains(PT pt)
+            public bool Contains(Word w)
             {
-                return dic.ContainsKey(pt.ToString());
+                return _params.ContainsKey(w.ToString());
             }
 
-            public string this[string pt]
+            public string this[string w]
             {
                 set
                 {
-                    if (pl.Contains(pt))
-                        dic[pt] = value;
+                    if (_words.Contains(w))
+                        _params[w] = value;
                 }
                 get
                 {
-                    if (dic.ContainsKey(pt))
-                        return dic[pt];
+                    if (_params.ContainsKey(w))
+                        return _params[w];
                     return null;
                 }
             }
 
-            public string this[PT pt]
+            public string this[Word w]
             {
                 set
                 {
-                    if (pl.Contains(pt.ToString()))
-                        dic[pt.ToString()] = value;
+                    if (_words.Contains(w.ToString()))
+                        _params[w.ToString()] = value;
                 }
                 get
                 {
-                    if (dic.ContainsKey(pt.ToString()))
-                        return dic[pt.ToString()];
+                    if (_params.ContainsKey(w.ToString()))
+                        return _params[w.ToString()];
                     return null;
                 }
             }
         }
 
-        enum PT
+        enum Word
         {
             //.template file
             tmp,
