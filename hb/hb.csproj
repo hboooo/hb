@@ -66,12 +66,15 @@
   <ItemGroup>
     <Compile Include="AESHelper.cs" />
     <Compile Include="BytesExtension.cs" />
+    <Compile Include="BytesSerialize.cs" />
     <Compile Include="CallbackOnDispose.cs" />
     <Compile Include="DateTimeExtension.cs" />
     <Compile Include="DebugTimer.cs" />
     <Compile Include="Dynamic\DynamicJson.cs" />
     <Compile Include="Dynamic\DynamicEx.cs" />
     <Compile Include="Dynamic\DynamicUtils.cs" />
+    <Compile Include="FileWatcher.cs" />
+    <Compile Include="FormatGuid.cs" />
     <Compile Include="IEnumerableExtension.cs" />
     <Compile Include="IPUtils.cs" />
     <Compile Include="LogServices\ILoggingService.cs" />

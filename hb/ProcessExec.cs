@@ -16,13 +16,11 @@ namespace hb
     /// </summary>
     public class ProcessExec
     {
-        private Process proc = null;
-
         private Action<string> action;
 
         public ProcessExec()
         {
-            proc = new Process();
+
         }
 
         public ProcessExec(Action<string> outputAction) : this()
@@ -38,6 +36,7 @@ namespace hb
             }
             try
             {
+                Process proc = new Process();
                 proc.StartInfo.CreateNoWindow = true;
                 proc.StartInfo.FileName = "cmd.exe";
                 proc.StartInfo.UseShellExecute = false;
@@ -63,6 +62,80 @@ namespace hb
         {
             if (!string.IsNullOrEmpty(e.Data))
                 action?.Invoke(e.Data);
+        }
+
+        /// <summary>
+        /// 进程是否存在
+        /// </summary>
+        /// <param name="name">进程名称</param>
+        /// <returns></returns>
+        public static bool Exist(string name)
+        {
+            try
+            {
+                var p = Process.GetProcessesByName(name);
+                if (p.Length > 0) return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 启动进程
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static bool Start(string name, bool waitForExit = false, string args = "")
+        {
+            try
+            {
+                Process p = new Process();
+                p.StartInfo.FileName = name;
+                p.StartInfo.Arguments = args;
+                p.StartInfo.UseShellExecute = true;
+                p.Start();
+                if (waitForExit)
+                {
+                    p.WaitForExit();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 关闭进程
+        /// </summary>
+        /// <param name="name">进程名</param>
+        public static void Kill(string name)
+        {
+            try
+            {
+                Process[] processes = Process.GetProcessesByName(name);
+                foreach (Process p in processes)
+                {
+                    try
+                    {
+                        p.Kill();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
     }
 }

@@ -13,6 +13,36 @@ namespace hb
     public class ZipCompression
     {
         /// <summary>
+        /// 压缩文件
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="destFile"></param>
+        /// <returns></returns>
+        public static bool Compress(string file, string destFile)
+        {
+            if (string.IsNullOrEmpty(file))
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+            if (!File.Exists(file))
+            {
+                throw new FileNotFoundException(file);
+            }
+
+            try
+            {
+                byte[] compressBytes = Compress(File.ReadAllBytes(file));
+                File.WriteAllBytes(destFile, compressBytes);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return false;
+        }
+
+        /// <summary>
         /// 压缩
         /// </summary>
         /// <param name="bytes"></param>
@@ -36,7 +66,37 @@ namespace hb
             }
             return null;
         }
-        
+
+        /// <summary>
+        /// 解压缩文件
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="destFile"></param>
+        /// <returns></returns>
+        public static bool Decompress(string file, string destFile)
+        {
+            if (string.IsNullOrEmpty(file))
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+            if (!File.Exists(file))
+            {
+                throw new FileNotFoundException(file);
+            }
+
+            try
+            {
+                byte[] decompressBytes = Decompress(File.ReadAllBytes(file));
+                File.WriteAllBytes(destFile, decompressBytes);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return false;
+        }
+
         /// <summary>
         /// 解压
         /// </summary>

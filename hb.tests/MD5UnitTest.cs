@@ -31,5 +31,16 @@ namespace hb.tests
 
             Assert.IsTrue(value1 == value2);
         }
+
+        [TestMethod]
+        public void MD5Output()
+        {
+            string test = "md5 output type";
+            string value1 = MD5Utils.GetStringMD5(test);
+            string value2 = MD5Utils.GetStringMD5(test, hb.MD5Output.Hex);
+            Console.WriteLine(value1);
+            Console.WriteLine(value2);
+
+        }
     }
 }

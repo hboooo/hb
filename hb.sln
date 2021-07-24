@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hb.network", "hb.network\hb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hb.demo", "hb.demo\hb.demo.csproj", "{47503A02-E33C-4D18-A06A-13FB1C8B57D9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{A9F915B3-682B-4353-A04A-A5352DE2DE0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateAssemblyInfo", "UpdateAssemblyInfo\UpdateAssemblyInfo.csproj", "{8229927A-9D5F-47D7-B7BE-00219316326F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,12 +67,21 @@ Global
 		{47503A02-E33C-4D18-A06A-13FB1C8B57D9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{47503A02-E33C-4D18-A06A-13FB1C8B57D9}.Release|x86.ActiveCfg = Release|Any CPU
 		{47503A02-E33C-4D18-A06A-13FB1C8B57D9}.Release|x86.Build.0 = Release|Any CPU
+		{8229927A-9D5F-47D7-B7BE-00219316326F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8229927A-9D5F-47D7-B7BE-00219316326F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8229927A-9D5F-47D7-B7BE-00219316326F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8229927A-9D5F-47D7-B7BE-00219316326F}.Debug|x86.Build.0 = Debug|Any CPU
+		{8229927A-9D5F-47D7-B7BE-00219316326F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8229927A-9D5F-47D7-B7BE-00219316326F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8229927A-9D5F-47D7-B7BE-00219316326F}.Release|x86.ActiveCfg = Release|Any CPU
+		{8229927A-9D5F-47D7-B7BE-00219316326F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{275B3EFA-1E4C-4982-A471-7A3E44352372} = {AD07F4F1-D96C-497B-9D4E-F8F6E037F1AB}
+		{8229927A-9D5F-47D7-B7BE-00219316326F} = {A9F915B3-682B-4353-A04A-A5352DE2DE0C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5F2D1D23-89F7-4406-8DDD-B3D32AD384C1}
