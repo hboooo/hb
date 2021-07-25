@@ -97,11 +97,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\hb.wpf\hb.wpf.csproj">
+    <ProjectReference Include="..\..\src\hb.wpf\hb.wpf.csproj">
       <Project>{bfde7c45-6283-4b35-a0ef-5aae59f4af1f}</Project>
       <Name>hb.wpf</Name>
     </ProjectReference>
-    <ProjectReference Include="..\hb\hb.csproj">
+    <ProjectReference Include="..\..\src\hb\hb.csproj">
       <Project>{57ccfac9-7274-4696-84d0-4b973100f22f}</Project>
       <Name>hb</Name>
     </ProjectReference>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using hb.LogServices;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -194,10 +195,12 @@ namespace hb.network.FTP
             }
             catch (WebException ex)
             {
+                Logger.Error(ex);
                 action?.Invoke(false);
             }
             catch (System.Exception ex)
             {
+                Logger.Error(ex);
                 action?.Invoke(false);
             }
         }

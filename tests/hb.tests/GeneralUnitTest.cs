@@ -61,7 +61,7 @@ namespace hb.tests
             };
             fw.Start();
             bool isFinished = false;
-            TaskPro.Wait(ref isFinished, 1000 * 60);
+            TaskPro.Wait(ref isFinished, 1000 * 10);
             fw.Stop();
         }
 
@@ -80,9 +80,10 @@ namespace hb.tests
         [TestMethod]
         public void CompressFileTest()
         {
-            string file = "d:\\R-C3.jpg";
+            //说明：先创建空文件d:/a.txt
+            string file = "d:\\a.txt";
             string destFile = "d:\\b.gz";
-            string newFile = "d:\\c.jpg";
+            string newFile = "d:\\c.txt";
             ZipCompression.Compress(file, destFile);
             ZipCompression.Decompress(destFile, newFile);
         }
