@@ -27,7 +27,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hb.network", "src\hb.networ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hb.wpf", "src\hb.wpf\hb.wpf.csproj", "{BFDE7C45-6283-4B35-A0EF-5AAE59F4AF1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hb.tcp", "src\hb.tcp\hb.tcp.csproj", "{5798EE49-1201-49A6-B7ED-6D2AEFC730AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XTcp", "src\XTcp\XTcp.csproj", "{5798EE49-1201-49A6-B7ED-6D2AEFC730AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
