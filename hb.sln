@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hb.network", "src\hb.networ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hb.wpf", "src\hb.wpf\hb.wpf.csproj", "{BFDE7C45-6283-4B35-A0EF-5AAE59F4AF1F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hb.tcp", "src\hb.tcp\hb.tcp.csproj", "{5798EE49-1201-49A6-B7ED-6D2AEFC730AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,14 @@ Global
 		{BFDE7C45-6283-4B35-A0EF-5AAE59F4AF1F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BFDE7C45-6283-4B35-A0EF-5AAE59F4AF1F}.Release|x86.ActiveCfg = Release|x86
 		{BFDE7C45-6283-4B35-A0EF-5AAE59F4AF1F}.Release|x86.Build.0 = Release|x86
+		{5798EE49-1201-49A6-B7ED-6D2AEFC730AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5798EE49-1201-49A6-B7ED-6D2AEFC730AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5798EE49-1201-49A6-B7ED-6D2AEFC730AA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5798EE49-1201-49A6-B7ED-6D2AEFC730AA}.Debug|x86.Build.0 = Debug|Any CPU
+		{5798EE49-1201-49A6-B7ED-6D2AEFC730AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5798EE49-1201-49A6-B7ED-6D2AEFC730AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5798EE49-1201-49A6-B7ED-6D2AEFC730AA}.Release|x86.ActiveCfg = Release|Any CPU
+		{5798EE49-1201-49A6-B7ED-6D2AEFC730AA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,6 +122,7 @@ Global
 		{57CCFAC9-7274-4696-84D0-4B973100F22F} = {535B106E-CDB4-4CE6-9720-1AACD090E090}
 		{FD2E681C-7AA9-4836-A280-674D5D4E4532} = {535B106E-CDB4-4CE6-9720-1AACD090E090}
 		{BFDE7C45-6283-4B35-A0EF-5AAE59F4AF1F} = {535B106E-CDB4-4CE6-9720-1AACD090E090}
+		{5798EE49-1201-49A6-B7ED-6D2AEFC730AA} = {535B106E-CDB4-4CE6-9720-1AACD090E090}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5F2D1D23-89F7-4406-8DDD-B3D32AD384C1}
