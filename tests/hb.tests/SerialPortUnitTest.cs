@@ -35,7 +35,7 @@ namespace hb.tests
         [TestMethod()]
         public void SerialPortTest()
         {
-            SerialPortPro serialPort = new SerialPortPro(s =>
+            XSerialPort serialPort = new XSerialPort(s =>
             {
                 s.PortName = "COM1";
             });

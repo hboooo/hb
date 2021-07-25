@@ -12,7 +12,7 @@ namespace hb.network.Serial
     /// date       :2021/7/24 0:01:49
     /// description:串口通讯
     /// </summary>
-    public partial class SerialPortPro
+    public partial class XSerialPort
     {
         #region Propertys
 
@@ -35,17 +35,17 @@ namespace hb.network.Serial
         /// <summary>
         /// The method of execution that data has been received through a port represented by the SerialPort object.
         /// </summary>
-        public Action<SerialPortPro, byte[]> OnData { get; set; }
+        public Action<XSerialPort, byte[]> OnData { get; set; }
 
         /// <summary>
         /// The method of execution that an error has occurred with a port represented by a SerialPort object.
         /// </summary>
-        private Action<SerialPortPro, SerialError> onError;
+        private Action<XSerialPort, SerialError> onError;
 
         /// <summary>
         /// The method of execution that a non-data signal event has occurred on the port represented by the SerialPort object.
         /// </summary>
-        private Action<SerialPortPro, SerialPinChange> onPinChange;
+        private Action<XSerialPort, SerialPinChange> onPinChange;
 
         /// <summary>
         /// Gets or sets the data format.
@@ -293,9 +293,9 @@ namespace hb.network.Serial
         #region Constructor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SerialPortPro"/> class.
+        /// Initializes a new instance of the <see cref="XSerialPort"/> class.
         /// </summary>
-        private SerialPortPro()
+        private XSerialPort()
         {
             this.tryReadNumber = 3;
             this.serialPort = new System.IO.Ports.SerialPort();
@@ -309,7 +309,7 @@ namespace hb.network.Serial
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SerialPortPro"/> class.
+        /// Initializes a new instance of the <see cref="XSerialPort"/> class.
         /// </summary>
         /// <param name="portName">The name of the port.</param>
         /// <param name="baudRate">The baudrate,default is 9600.</param>
@@ -333,12 +333,12 @@ namespace hb.network.Serial
         /// <para>Handshake.RequestToSend：2|r|rst</para>
         /// <para>Handshake.RequestToSendXOnXOff：3|rx|rtsxx</para>
         /// </param>
-        public SerialPortPro(string portName, int baudRate = 9600, string parity = "none", int dataBits = 8, string stopBits = null, string handshake = null) : this(new SerialOptions(portName, baudRate, dataBits, stopBits, parity, handshake))
+        public XSerialPort(string portName, int baudRate = 9600, string parity = "none", int dataBits = 8, string stopBits = null, string handshake = null) : this(new SerialOptions(portName, baudRate, dataBits, stopBits, parity, handshake))
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SerialPortPro"/> class.
+        /// Initializes a new instance of the <see cref="XSerialPort"/> class.
         /// </summary>
         /// <param name="portName">The name of the port.</param>
         /// <param name="baudRate">The baudrate,default is 9600.</param>
@@ -362,12 +362,12 @@ namespace hb.network.Serial
         /// <para>Handshake.RequestToSend：2</para>
         /// <para>Handshake.RequestToSendXOnXOff：3</para>
         /// </param>
-        public SerialPortPro(string portName, int baudRate = 9600, int parity = 0, int dataBits = 8, int stopBits = 1, int handshake = 0) : this(new SerialOptions(portName, baudRate, dataBits, stopBits, parity, handshake))
+        public XSerialPort(string portName, int baudRate = 9600, int parity = 0, int dataBits = 8, int stopBits = 1, int handshake = 0) : this(new SerialOptions(portName, baudRate, dataBits, stopBits, parity, handshake))
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SerialPortPro"/> class.
+        /// Initializes a new instance of the <see cref="XSerialPort"/> class.
         /// </summary>
         /// <param name="portName">The name of the port.</param>
         /// <param name="baudRate">The baudrate,default is 9600.</param>
@@ -375,24 +375,24 @@ namespace hb.network.Serial
         /// <param name="dataBits">The databits,default is 8.</param>
         /// <param name="stopBits">The int stopbits,default is StopBits.One.</param>
         /// <param name="handshake">The int handshake,default is Handshake.None.</param>
-        public SerialPortPro(string portName, int baudRate = 9600, Parity parity = Parity.None, int dataBits = 8, StopBits stopBits = StopBits.None, Handshake handshake = Handshake.None) : this(new SerialOptions(portName, baudRate, dataBits, stopBits, parity, handshake))
+        public XSerialPort(string portName, int baudRate = 9600, Parity parity = Parity.None, int dataBits = 8, StopBits stopBits = StopBits.None, Handshake handshake = Handshake.None) : this(new SerialOptions(portName, baudRate, dataBits, stopBits, parity, handshake))
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SerialPortPro"/> class.
+        /// Initializes a new instance of the <see cref="XSerialPort"/> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        public SerialPortPro(SerialOptions options) : this()
+        public XSerialPort(SerialOptions options) : this()
         {
             this.Initialize(options);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SerialPortPro"/> class.
+        /// Initializes a new instance of the <see cref="XSerialPort"/> class.
         /// </summary>
         /// <param name="action">The action.</param>
-        public SerialPortPro(Action<SerialOptions> action) : this()
+        public XSerialPort(Action<SerialOptions> action) : this()
         {
             action?.Invoke(Options);
             this.Initialize(Options);
@@ -459,7 +459,7 @@ namespace hb.network.Serial
         /// </summary>
         /// <param name="flag"></param>
         /// <param name="action"></param>
-        public void UseDataReceived(bool flag, Action<SerialPortPro, byte[]> action = null)
+        public void UseDataReceived(bool flag, Action<XSerialPort, byte[]> action = null)
         {
             UseDataReceived(flag);
             OnData = action;
@@ -470,7 +470,7 @@ namespace hb.network.Serial
         /// </summary>
         /// <param name="action"></param>
         [Obsolete("This method is obsolete,will be removed next release version.")]
-        public void UseDataReceived(Action<SerialPortPro, byte[]> action) => UseDataReceived(true, action);
+        public void UseDataReceived(Action<XSerialPort, byte[]> action) => UseDataReceived(true, action);
 
         #region Open SerialPort method        
         /// <summary>
@@ -524,7 +524,7 @@ namespace hb.network.Serial
         /// Set the method when [error].
         /// </summary>
         /// <param name="action">The action.</param>
-        public void OnError(Action<SerialPortPro, SerialError> action)
+        public void OnError(Action<XSerialPort, SerialError> action)
         {
             this.onError = action;
         }
@@ -535,7 +535,7 @@ namespace hb.network.Serial
         /// Set the method when [pin changed].
         /// </summary>
         /// <param name="action">The action.</param>
-        public void OnPinChange(Action<SerialPortPro, SerialPinChange> action)
+        public void OnPinChange(Action<XSerialPort, SerialPinChange> action)
         {
             this.onPinChange = action;
         }

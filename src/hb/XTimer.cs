@@ -9,7 +9,7 @@ namespace hb
     /// date       :2021/7/23 1:19:08
     /// description:定时器
     /// </summary>
-    public class TimerPro : IDisposable
+    public class XTimer : IDisposable
     {
         private readonly Action f_Action;
 
@@ -26,7 +26,7 @@ namespace hb
         /// <param name="action">定时任务</param>
         /// <param name="delay">启动延时</param>
         /// <param name="timespan">启动执行时间间隔</param>
-        public TimerPro(Action action, int delay, int timespan)
+        public XTimer(Action action, int delay, int timespan)
         {
             f_Action = action;
             f_timespan = timespan;

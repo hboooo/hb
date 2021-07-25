@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace hb.network.SMTP
 {
@@ -12,7 +8,7 @@ namespace hb.network.SMTP
     /// date       :2021/7/24 1:09:05
     /// description:
     /// </summary>
-    public class MailProvider
+    public class XMail
     {
         /// <summary>
         /// 邮件服务器

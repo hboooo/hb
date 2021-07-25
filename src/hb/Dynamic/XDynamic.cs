@@ -14,7 +14,7 @@ namespace hb.Dynamic
     /// description:动态对象，动态绑定
     /// </summary>
 
-    public class DynamicEx : DynamicObject, INotifyPropertyChanged
+    public class XDynamic : DynamicObject, INotifyPropertyChanged
     {
         public dynamic Self
         {
@@ -23,7 +23,7 @@ namespace hb.Dynamic
 
         #region DynamicObject overrides
 
-        public DynamicEx()
+        public XDynamic()
         {
         }
 
@@ -114,7 +114,7 @@ namespace hb.Dynamic
 
         #region Public methods
 
-        public DynamicEx AddItem(object item)
+        public XDynamic AddItem(object item)
         {
             itemsCollection.Add(item);
             OnPropertyChanged(Binding.IndexerName);

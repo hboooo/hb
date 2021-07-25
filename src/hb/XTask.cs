@@ -11,7 +11,7 @@ namespace hb
     /// date       :2021/7/23 1:15:58
     /// description:Task帮助类
     /// </summary>
-    public class TaskPro
+    public class XTask
     {
         /// <summary>
         /// 多线程处理
@@ -75,11 +75,11 @@ namespace hb
         }
 
         /// <summary>
-        /// 线程延迟调用处理
+        /// 线程等待 延迟调用处理
         /// </summary>
         /// <param name="dueTime"></param>
         /// <returns></returns>
-        public static Task Delay(int dueTime)
+        public static Task DelayTask(int dueTime)
         {
             if (dueTime < -1) throw new ArgumentOutOfRangeException("dueTime");
 
@@ -98,14 +98,25 @@ namespace hb
         /// </summary>
         /// <param name="isFinished"></param>
         /// <param name="timeout"></param>
-        public static void Wait(ref bool isFinished, int timeout = 1000)
+        public static void Delay(ref bool isFinished, int timeout = 1000)
         {
-            int sleepspan = 10;
-            int i = 0;
-            while (isFinished == false && (i + 1) * sleepspan < timeout)
+            int start = Environment.TickCount;
+            while (isFinished == false && Environment.TickCount - start < timeout)
             {
-                Thread.Sleep(sleepspan);
-                i++;
+                Thread.Sleep(0);
+            }
+        }
+
+        /// <summary>
+        /// 线程等待
+        /// </summary>
+        /// <param name="timeout"></param>
+        public static void Delay(int timeout = 1000)
+        {
+            int start = Environment.TickCount;
+            while (Environment.TickCount - start < timeout)
+            {
+                Thread.Sleep(0);
             }
         }
     }

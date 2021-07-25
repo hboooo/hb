@@ -26,6 +26,12 @@ namespace hb.demo
             InitializeComponent();
             Logger.Initialize(Logger.LOG4NET);
             Loaded += MainWindow_Loaded;
+            this.KeyDown += MainWindow_KeyDown;
+        }
+
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)

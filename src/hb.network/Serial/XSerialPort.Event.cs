@@ -8,7 +8,7 @@ namespace hb.network.Serial
     /// date       :2021/7/24 0:26:11
     /// description:
     /// </summary>
-    public partial class SerialPortPro
+    public partial class XSerialPort
     {
         #region DataReceived event
         /// <summary>

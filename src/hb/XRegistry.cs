@@ -8,15 +8,15 @@ namespace hb
     /// date       :2021/7/24 12:40:50
     /// description:注册表工具
     /// </summary>
-    public class RegistryPro
+    public class XRegistry
     {
         private string baseKey = "Software";
 
-        public RegistryPro()
+        public XRegistry()
         {
         }
 
-        public RegistryPro(string baseKey)
+        public XRegistry(string baseKey)
         {
             this.baseKey = baseKey;
         }

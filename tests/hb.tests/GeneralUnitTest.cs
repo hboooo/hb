@@ -11,23 +11,23 @@ namespace hb.tests
         [TestMethod]
         public void ProcessExecTest()
         {
-            ProcessExec p = new ProcessExec((str) =>
+            XProcess.OutputAction = (str) =>
             {
                 Console.WriteLine(str);
-            });
-            p.Execute("dir");
+            };
+            XProcess.Execute("dir");
             bool isFinished = false;
-            TaskPro.Wait(ref isFinished);
+            XTask.Delay(ref isFinished);
         }
 
         [TestMethod]
         public void GuidTest()
         {
-            var g1 = FormatGuid.Next();
-            var g2 = FormatGuid.NextB();
-            var g3 = FormatGuid.NextN();
-            var g4 = FormatGuid.NextP();
-            var g5 = FormatGuid.NextX();
+            var g1 = XGuid.Next();
+            var g2 = XGuid.NextB();
+            var g3 = XGuid.NextN();
+            var g4 = XGuid.NextP();
+            var g5 = XGuid.NextX();
             Console.WriteLine(g1);
             Console.WriteLine(g2);
             Console.WriteLine(g3);
@@ -61,7 +61,7 @@ namespace hb.tests
             };
             fw.Start();
             bool isFinished = false;
-            TaskPro.Wait(ref isFinished, 1000 * 10);
+            XTask.Delay(ref isFinished, 1000 * 10);
             fw.Stop();
         }
 

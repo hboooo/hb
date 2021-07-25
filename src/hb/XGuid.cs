@@ -7,7 +7,7 @@ namespace hb
     /// date       :2021/7/24 18:39:15
     /// description:Guid生成器
     /// </summary>
-    public class FormatGuid
+    public class XGuid
     {
         /// <summary>
         /// Guid生成，格式 9af7f46a-ea52-4aa3-b8c3-9fd484c2af12

@@ -11,7 +11,7 @@ namespace hb.tests
         public void TaskRun1()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 };
-            TaskPro.RunTask(list, (i) =>
+            XTask.RunTask(list, (i) =>
             {
                 Console.WriteLine($"run {i}");
             });
@@ -21,7 +21,7 @@ namespace hb.tests
         public void TaskRun2()
         {
             List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 };
-            var result = TaskPro.RunTask(list, (i) =>
+            var result = XTask.RunTask(list, (i) =>
             {
                 Console.WriteLine($"run {i * 100}");
                 return i * 100;

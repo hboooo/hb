@@ -7,7 +7,7 @@ namespace hb.network.Serial
     /// date       :2021/7/24 0:24:11
     /// description:
     /// </summary>
-    public partial class SerialPortPro
+    public partial class XSerialPort
     {
         /// <summary>
         /// Get an array of serialport name for current computer.
@@ -40,9 +40,9 @@ namespace hb.network.Serial
 
 
         /// <summary>
-        /// Initializes static members of the <see cref="SerialPortPro"/> class.
+        /// Initializes static members of the <see cref="XSerialPort"/> class.
         /// </summary>
-        static SerialPortPro()
+        static XSerialPort()
         {
             BaudRateDictionary = new Dictionary<string, int>
             {

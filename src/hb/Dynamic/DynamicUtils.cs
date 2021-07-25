@@ -30,7 +30,7 @@ namespace hb.Dynamic
             return null;
         }
 
-        public static bool IsExist(DynamicEx dnc, string propName)
+        public static bool IsExist(XDynamic dnc, string propName)
         {
             IEnumerable<string> pros = dnc.GetDynamicMemberNames();
             foreach (var propertyInfo in pros)
