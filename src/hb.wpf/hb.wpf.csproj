@@ -55,7 +55,9 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -66,6 +68,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converter\BoolVisibleConverter.cs" />
+    <Compile Include="FullScreenEnabledWindow.cs" />
     <Compile Include="Hook\XHook.cs" />
     <Compile Include="Hook\KeyboardHook.cs" />
     <Compile Include="Hook\MouseHook.cs" />
@@ -77,10 +81,18 @@
     <Compile Include="SuspendCtrlAltDelete.cs" />
     <Compile Include="VisualTreeHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XApplication.cs" />
     <Compile Include="XAudio.cs" />
+    <Compile Include="XImage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\hb\hb.csproj">
+      <Project>{57CCFAC9-7274-4696-84D0-4B973100F22F}</Project>
+      <Name>hb</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

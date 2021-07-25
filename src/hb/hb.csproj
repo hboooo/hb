@@ -73,6 +73,7 @@
     <Compile Include="Dynamic\DynamicJson.cs" />
     <Compile Include="Dynamic\XDynamic.cs" />
     <Compile Include="Dynamic\DynamicUtils.cs" />
+    <Compile Include="EnumExtension.cs" />
     <Compile Include="FileWatcher.cs" />
     <Compile Include="XDir.cs" />
     <Compile Include="XFile.cs" />
