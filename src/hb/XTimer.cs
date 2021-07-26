@@ -89,7 +89,8 @@ namespace hb
         {
             try
             {
-                f_Timer?.Dispose(f_WaitHandle);
+                f_WaitHandle.Close();
+                f_Timer?.Dispose();
                 Logger.Debug($"Dispose task timer action, action:{f_Action.Method}");
             }
             catch (Exception ex)
