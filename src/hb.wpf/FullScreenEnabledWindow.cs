@@ -85,7 +85,7 @@ namespace hb.wpf
         }
     }
 
-    public static class WinFormsExtension
+    public static class WinFormsExtensions
     {
 
         public static Rect TransformFromDevice(this Rect rect, Visual visual)

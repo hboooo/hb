@@ -12,7 +12,7 @@ namespace hb
     /// date       :2021/7/25 16:39:55
     /// description:
     /// </summary>
-    public static class EnumExtension
+    public static class EnumExtensions
     {
         /// <summary>
         /// 获取枚举值描述信息

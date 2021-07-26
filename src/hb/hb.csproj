@@ -65,20 +65,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AESHelper.cs" />
-    <Compile Include="BytesExtension.cs" />
+    <Compile Include="BytesExtensions.cs" />
     <Compile Include="BytesSerialize.cs" />
     <Compile Include="CallbackOnDispose.cs" />
-    <Compile Include="DateTimeExtension.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="DebugTimer.cs" />
     <Compile Include="Dynamic\DynamicJson.cs" />
     <Compile Include="Dynamic\XDynamic.cs" />
     <Compile Include="Dynamic\DynamicUtils.cs" />
-    <Compile Include="EnumExtension.cs" />
+    <Compile Include="EnumExtensions.cs" />
     <Compile Include="FileWatcher.cs" />
     <Compile Include="XDir.cs" />
     <Compile Include="XFile.cs" />
     <Compile Include="XGuid.cs" />
-    <Compile Include="IEnumerableExtension.cs" />
+    <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="IPUtils.cs" />
     <Compile Include="LogServices\ILoggingService.cs" />
     <Compile Include="LogServices\Log4netLoggingService.cs" />
@@ -90,7 +90,7 @@
     <Compile Include="XRegistry.cs" />
     <Compile Include="RSAHelper.cs" />
     <Compile Include="Snowflake.cs" />
-    <Compile Include="StringExtension.cs" />
+    <Compile Include="StringExtensions.cs" />
     <Compile Include="XSystem.cs" />
     <Compile Include="XTask.cs" />
     <Compile Include="TaskQueue.cs" />

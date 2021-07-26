@@ -11,7 +11,7 @@ namespace hb
     /// date       :2021/7/24 15:53:58
     /// description:
     /// </summary>
-    public static class BytesExtension
+    public static class BytesExtensions
     {
 
         /// <summary>

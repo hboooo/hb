@@ -8,7 +8,7 @@ namespace hb
     /// date       :2021/7/21 1:51:24
     /// description:字符串扩展
     /// </summary>
-    public static class StringExtension
+    public static class StringExtensions
     {
         public static string ToHexString(this string @this, Encoding encode)
         {

@@ -8,7 +8,7 @@ namespace hb
     /// date       :2021/7/23 22:03:18
     /// description:
     /// </summary>
-    public static class IEnumerableExtension
+    public static class IEnumerableExtensions
     {
         /// <summary>
         /// 分批循环遍历

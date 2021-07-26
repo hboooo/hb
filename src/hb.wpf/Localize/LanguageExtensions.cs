@@ -16,7 +16,7 @@ namespace hb.wpf.Localize
     /// description:
     /// </summary>
     [MarkupExtensionReturnType(typeof(BindingExpression))]
-    public class LanguageExtension : MarkupExtension, INotifyPropertyChanged
+    public class LanguageExtensions : MarkupExtension, INotifyPropertyChanged
     {
         [ConstructorArgument("Key")]
         public string Key
@@ -52,18 +52,18 @@ namespace hb.wpf.Localize
             }
         }
 
-        public LanguageExtension()
+        public LanguageExtensions()
         {
         }
 
-        public LanguageExtension(string key) : this()
+        public LanguageExtensions(string key) : this()
         {
             Key = key;
             LanguageService.LanguageChanged -= WesLanguages_LanguageChanged;
             LanguageService.LanguageChanged += WesLanguages_LanguageChanged;
         }
 
-        public LanguageExtension(string key, string defaultValue) : this(key)
+        public LanguageExtensions(string key, string defaultValue) : this(key)
         {
             DefaultValue = defaultValue;
         }

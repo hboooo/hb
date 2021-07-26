@@ -7,7 +7,7 @@ namespace hb
     /// date       :2021/7/24 1:42:25
     /// description:
     /// </summary>
-    public static class DateTimeExtension
+    public static class DateTimeExtensions
     {
         /// <summary>
         /// yyyy-MM-dd HH:mm:ss

@@ -14,7 +14,7 @@ namespace hb.wpf.Converter
     /// date       :2021/7/25 16:35:44
     /// description:
     /// </summary>
-    public class BoolVisibleConverter : IValueConverter
+    public sealed class BooleanToVisibleConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
