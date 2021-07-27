@@ -61,8 +61,8 @@ jobs:
       Test_Project_Path: tests\hb.tests\hb.tests.csproj                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
       # Wap_Project_Directory: your-wap-project-directory-name    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
       # Wap_Project_Path: your-wap-project-path                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
-      Code_Path: src
-      Package_Dir: tools
+      Code_Path: src\
+      Package_Dir: tools\
       Package_Archive_name: hb.zip
       
     steps:
@@ -94,7 +94,7 @@ jobs:
         
     # Archive the package
     - name: Create archive
-      run: Compress-Archive -Path $env:src\ -DestinationPath $env:Package_Dir\$env:Package_Archive_name
+      run: Compress-Archive -Path $env:Code_Path -DestinationPath $env:Package_Dir$env:Package_Archive_name
 
     # Decode the base 64 encoded pfx and save the Signing_Certificate
     #- name: Decode the pfx
