@@ -72,10 +72,10 @@ jobs:
         fetch-depth: 0
 
     # Install the .NET Core workload
-    #- name: Install .NET Core
-    #  uses: actions/setup-dotnet@v1
-    #  with:
-    #    dotnet-version: 5.0.x
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe
@@ -99,7 +99,9 @@ jobs:
         
     # Execute all unit tests in the solution
     - name: Execute unit tests
-      run: dotnet test $env:Test_Project_Path
+      run: dotnet test -c $env:Configuration
+      env:
+        Configuration: ${{ matrix.configuration }}
 
     # Archive the package
     #- name: Create archive
