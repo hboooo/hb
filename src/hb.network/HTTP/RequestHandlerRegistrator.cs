@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 
 namespace hb.network.HTTP
 {
@@ -23,16 +22,17 @@ namespace hb.network.HTTP
         }
         private readonly Method httpMethod;
 
-        public Dictionary<string, Func<HttpListenerRequest, string>> Handlers
+        public Dictionary<string, Func<HttpListenerRequest, byte[]>> Handlers
         {
             get { return handlers; }
         }
-        private readonly Dictionary<string, Func<HttpListenerRequest, string>> handlers = new Dictionary<string, Func<HttpListenerRequest, string>>();
+        private readonly Dictionary<string, Func<HttpListenerRequest, byte[]>> handlers = new Dictionary<string, Func<HttpListenerRequest, byte[]>>();
 
-        public Func<HttpListenerRequest, string> this[string path]
+        public Func<HttpListenerRequest, byte[]> this[string path]
         {
             get { return handlers[path]; }
             set { handlers[path] = value; }
         }
     }
+
 }

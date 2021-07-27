@@ -2,6 +2,7 @@
 using hb.network.HTTP;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Text;
 
 namespace hb.tests
 {
@@ -18,13 +19,13 @@ namespace hb.tests
             xl.Hostname = "+";
             xl.Get["/api/v1/test1"] = (r) =>
             {
-                return "test1";
+                return Encoding.UTF8.GetBytes("test1");
             };
             xl.Post["/api/v1/test2"] = (r) =>
             {
                 var query = r.GetQueryString();
                 var body = r.GetBody();
-                return "test2";
+                return Encoding.UTF8.GetBytes("test2");
             };
             bool ret = xl.Run();
             Console.WriteLine($"listen port {ret}");

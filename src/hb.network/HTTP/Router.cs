@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 
 namespace hb.network.HTTP
 {
@@ -14,6 +15,11 @@ namespace hb.network.HTTP
     /// </summary>
     public class Router
     {
+        /// <summary>
+        /// 是否支持跨域
+        /// </summary>
+        internal bool CORS { get; set; } = false;
+
         public Router()
         {
             registrators = new List<RequestHandlerRegistrator>(); ;
@@ -42,23 +48,59 @@ namespace hb.network.HTTP
                 .Union(servedStatic.Keys);
         }
 
-        public Func<HttpListenerRequest, string> FindHandler(HttpListenerRequest request)
+        public Func<HttpListenerRequest, byte[]> FindHandler(HttpListenerRequest request)
         {
-            Func<HttpListenerRequest, string> res = null;
+            Func<HttpListenerRequest, byte[]> res = null;
 
             var requestMethod = request.GetHttpMethod();
-            var registrator = registrators.FirstOrDefault(r => r.Method == requestMethod);
-            Logger.DebugFormatted("{0}, {1}", requestMethod, request.Url.AbsolutePath);
-            if (registrator != null)
+            //如果支持跨域则自动处理options
+            if (requestMethod == Method.OPTIONS && CORS)
             {
-                res = registrator.Handlers
-                    .Where(kv => kv.Key == request.Url.AbsolutePath)
-                    .Select(kv => kv.Value)
-                    .FirstOrDefault();
+                res = _ => new byte[0];
             }
+
+            if (res == null)
+            {
+                var registrator = registrators.FirstOrDefault(r => r.Method == requestMethod);
+                Logger.DebugFormatted("{0}, {1}", requestMethod, request.Url.AbsolutePath);
+                if (registrator != null)
+                {
+                    res = registrator.Handlers
+                        .Where(kv => kv.Key == request.Url.AbsolutePath)
+                        .Select(kv => kv.Value)
+                        .FirstOrDefault();
+                }
+
+                //静态资源
+                if (res == null && requestMethod == Method.GET)
+                {
+                    string staticMatch = servedStatic.Keys.FirstOrDefault(k => request.Url.AbsolutePath.StartsWith(k));
+                    if (staticMatch != null)
+                    {
+                        string fileRelPath = request.Url.AbsolutePath.Substring(staticMatch.Length);
+                        if (fileRelPath == "" || fileRelPath == "index")
+                            fileRelPath = "index.html";
+                        string fileAbsPath = Path.Combine(servedStatic[staticMatch].FullName, fileRelPath);
+                        if (File.Exists(fileAbsPath))
+                        {
+                            try
+                            {
+                                res = _ => File.ReadAllBytes(fileAbsPath);
+                            }
+                            catch (Exception) { }
+                        }
+                    }
+                }
+            }
+
             return res;
         }
 
+        /// <summary>
+        /// 静态资源访问
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <param name="path"></param>
         public void ServeStatic(DirectoryInfo directory, string path = "")
         {
             if (path == null)

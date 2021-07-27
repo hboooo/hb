@@ -5,18 +5,18 @@ namespace hb.LogServices
     public interface ILoggingService
     {
         void Debug(object message);
-        void DebugFormatted(string format, params object[] args);
+        void DebugFormat(string format, params object[] args);
         void Info(object message);
-        void InfoFormatted(string format, params object[] args);
+        void InfoFormat(string format, params object[] args);
         void Warn(object message);
         void Warn(object message, Exception exception);
-        void WarnFormatted(string format, params object[] args);
+        void WarnFormat(string format, params object[] args);
         void Error(object message);
         void Error(object message, Exception exception);
-        void ErrorFormatted(string format, params object[] args);
+        void ErrorFormat(string format, params object[] args);
         void Fatal(object message);
         void Fatal(object message, Exception exception);
-        void FatalFormatted(string format, params object[] args);
+        void FatalFormat(string format, params object[] args);
         bool IsDebugEnabled { get; }
         bool IsInfoEnabled { get; }
         bool IsWarnEnabled { get; }

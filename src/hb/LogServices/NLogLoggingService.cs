@@ -22,7 +22,7 @@ namespace hb.LogServices
             Logging.Debug(message);
         }
 
-        public void DebugFormatted(string format, params object[] args)
+        public void DebugFormat(string format, params object[] args)
         {
             Logging.Debug(format, args);
         }
@@ -37,7 +37,7 @@ namespace hb.LogServices
             Logging.Error(exception, message.ToString());
         }
 
-        public void ErrorFormatted(string format, params object[] args)
+        public void ErrorFormat(string format, params object[] args)
         {
             Logging.Error(format, args);
         }
@@ -52,7 +52,7 @@ namespace hb.LogServices
             Logging.Fatal(exception, message.ToString());
         }
 
-        public void FatalFormatted(string format, params object[] args)
+        public void FatalFormat(string format, params object[] args)
         {
             Logging.Fatal(format, args);
         }
@@ -62,7 +62,7 @@ namespace hb.LogServices
             Logging.Info(message);
         }
 
-        public void InfoFormatted(string format, params object[] args)
+        public void InfoFormat(string format, params object[] args)
         {
             Logging.Info(format, args);
         }
@@ -77,7 +77,7 @@ namespace hb.LogServices
             Logging.Warn(exception, message.ToString());
         }
 
-        public void WarnFormatted(string format, params object[] args)
+        public void WarnFormat(string format, params object[] args)
         {
             Logging.Warn(format, args);
         }

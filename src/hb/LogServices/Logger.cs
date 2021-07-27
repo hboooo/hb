@@ -43,7 +43,7 @@ namespace hb.LogServices
 
         public static void DebugFormatted(string format, params object[] args)
         {
-            _logger.DebugFormatted(format, args);
+            _logger.DebugFormat(format, args);
         }
 
         public static void Error(object message)
@@ -58,7 +58,7 @@ namespace hb.LogServices
 
         public static void ErrorFormatted(string format, params object[] args)
         {
-            _logger.WarnFormatted(format, args);
+            _logger.WarnFormat(format, args);
         }
 
         public static void Fatal(object message)
@@ -73,7 +73,7 @@ namespace hb.LogServices
 
         public static void FatalFormatted(string format, params object[] args)
         {
-            _logger.WarnFormatted(format, args);
+            _logger.WarnFormat(format, args);
         }
 
         public static void Info(object message)
@@ -83,7 +83,7 @@ namespace hb.LogServices
 
         public static void InfoFormatted(string format, params object[] args)
         {
-            _logger.WarnFormatted(format, args);
+            _logger.WarnFormat(format, args);
         }
 
         public static void Warn(object message)
@@ -98,7 +98,7 @@ namespace hb.LogServices
 
         public static void WarnFormatted(string format, params object[] args)
         {
-            _logger.WarnFormatted(format, args);
+            _logger.WarnFormat(format, args);
         }
     }
 }

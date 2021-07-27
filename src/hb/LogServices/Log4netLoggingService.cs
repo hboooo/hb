@@ -32,7 +32,7 @@ namespace hb.LogServices
             Logging.Debug(message);
         }
 
-        public void DebugFormatted(string format, params object[] args)
+        public void DebugFormat(string format, params object[] args)
         {
             Logging.DebugFormat(CultureInfo.InvariantCulture, format, args);
         }
@@ -47,7 +47,7 @@ namespace hb.LogServices
             Logging.Error(message, exception);
         }
 
-        public void ErrorFormatted(string format, params object[] args)
+        public void ErrorFormat(string format, params object[] args)
         {
             Logging.ErrorFormat(CultureInfo.InvariantCulture, format, args);
         }
@@ -62,7 +62,7 @@ namespace hb.LogServices
             Logging.Fatal(message, exception);
         }
 
-        public void FatalFormatted(string format, params object[] args)
+        public void FatalFormat(string format, params object[] args)
         {
             Logging.FatalFormat(CultureInfo.InvariantCulture, format, args);
         }
@@ -72,7 +72,7 @@ namespace hb.LogServices
             Logging.Info(message);
         }
 
-        public void InfoFormatted(string format, params object[] args)
+        public void InfoFormat(string format, params object[] args)
         {
             Logging.InfoFormat(CultureInfo.InvariantCulture, format, args);
         }
@@ -87,7 +87,7 @@ namespace hb.LogServices
             Logging.Warn(message, exception);
         }
 
-        public void WarnFormatted(string format, params object[] args)
+        public void WarnFormat(string format, params object[] args)
         {
             Logging.WarnFormat(CultureInfo.InvariantCulture, format, args);
         }

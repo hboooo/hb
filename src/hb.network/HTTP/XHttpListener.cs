@@ -30,11 +30,6 @@ namespace hb.network.HTTP
 
         public int Port { get; set; } = 8666;
 
-        /// <summary>
-        /// 是否支持跨域
-        /// </summary>
-        public bool CORS { get; set; } = false;
-
         public string BaseUrl
         {
             get { return BuildUri(); }
@@ -45,6 +40,20 @@ namespace hb.network.HTTP
             get { return listener.IsListening; }
         }
 
+        /// <summary>
+        /// 是否支持跨域
+        /// </summary>
+        public bool CORS
+        {
+            get
+            {
+                return router.CORS;
+            }
+            set
+            {
+                router.CORS = value;
+            }
+        }
 
         public XHttpListener()
         {
@@ -93,9 +102,9 @@ namespace hb.network.HTTP
 
         private void HttpListenerHandleAsync(object obj)
         {
-            Logger.Info("Web server running...");
             try
             {
+                Logger.Info("Web server running...");
                 while (listener.IsListening)
                 {
                     ThreadPool.QueueUserWorkItem(HttpListenerAction, listener.GetContext());
@@ -118,17 +127,10 @@ namespace hb.network.HTTP
             try
             {
                 Logger.InfoFormatted("Request:{0}://{1}:{2}{3}", ctx.Request.Url.Scheme, ctx.Request.Url.Host, ctx.Request.Url.Port, ctx.Request.Url.AbsolutePath);
-                Func<HttpListenerRequest, string> handler = router.FindHandler(ctx.Request);
+                Func<HttpListenerRequest, byte[]> handler = router.FindHandler(ctx.Request);
                 if (handler == null)
                 {
-                    if (CORS && ctx.Request.GetHttpMethod() == Method.OPTIONS)
-                    {
-                        Respond200(ctx, "OK");
-                    }
-                    else
-                    {
-                        Respond404(ctx);
-                    }
+                    Respond404(ctx);
                 }
                 else
                 {
@@ -159,11 +161,11 @@ namespace hb.network.HTTP
             }
         }
 
-        private void HandleRcvRequest(HttpListenerContext ctx, Func<HttpListenerRequest, string> handler)
+        private void HandleRcvRequest(HttpListenerContext ctx, Func<HttpListenerRequest, byte[]> handler)
         {
             try
             {
-                string response = handler(ctx.Request);
+                byte[] response = handler(ctx.Request);
                 Respond200(ctx, response);
             }
             catch (Exception ex)
@@ -191,7 +193,7 @@ namespace hb.network.HTTP
             }
         }
 
-        public void Respond200(HttpListenerContext ctx, string content)
+        public void Respond200(HttpListenerContext ctx, byte[] bytes)
         {
             int statusCode = 200;
             string desc = "The request was fulfilled.";
@@ -201,7 +203,7 @@ namespace hb.network.HTTP
             SetResponseHeader(ctx);
             ctx.Response.StatusCode = statusCode;
             ctx.Response.StatusDescription = desc;
-            byte[] buf = Encoding.UTF8.GetBytes(content);
+            byte[] buf = bytes;
             ctx.Response.ContentLength64 = buf.Length;
             ctx.Response.OutputStream.Write(buf, 0, buf.Length);
         }
