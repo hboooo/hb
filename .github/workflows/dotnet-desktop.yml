@@ -61,9 +61,9 @@ jobs:
       Test_Project_Path: tests\hb.tests\hb.tests.csproj                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
       # Wap_Project_Directory: your-wap-project-directory-name    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
       # Wap_Project_Path: your-wap-project-path                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
-      Code_Path: src\
-      Package_Dir: tools\
-      Package_Archive_name: hb.zip
+      # Code_Path: src\
+      # Package_Dir: tools\
+      # Package_Archive_name: hb.zip
       
     steps:
     - name: Checkout
@@ -91,7 +91,7 @@ jobs:
       run: nuget restore
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
+    - name: Build the application
       run: msbuild /p:Configuration=$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
