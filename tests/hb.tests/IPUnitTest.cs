@@ -18,7 +18,7 @@ namespace hb.tests
         [TestMethod]
         public void GetLocalHost()
         {
-            string host = IPUtils.GetLocalHost();
+            var host = IPUtils.GetLocalIntranetIP();
             Debug.WriteLine($"host:{host}");
             Assert.IsNotNull(host);
         }

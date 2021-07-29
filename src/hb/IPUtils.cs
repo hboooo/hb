@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Management;
@@ -14,6 +15,101 @@ namespace hb
     public class IPUtils
     {
         /// <summary>
+        /// A类: 10.0.0.0-10.255.255.255
+        /// </summary>
+        static private long ipABegin, ipAEnd;
+        /// <summary>
+        /// B类: 172.16.0.0-172.31.255.255   
+        /// </summary>
+        static private long ipBBegin, ipBEnd;
+        /// <summary>
+        /// C类: 192.168.0.0-192.168.255.255
+        /// </summary>
+        static private long ipCBegin, ipCEnd;
+
+        static IPUtils()
+        {
+            ipABegin = IpToNumber("10.0.0.0");
+            ipAEnd = IpToNumber("10.255.255.255");
+
+            ipBBegin = IpToNumber("172.16.0.0");
+            ipBEnd = IpToNumber("172.31.255.255");
+
+            ipCBegin = IpToNumber("192.168.0.0");
+            ipCEnd = IpToNumber("192.168.255.255");
+        }
+
+        public static long IpToNumber(string ipAddress)
+        {
+            return IpToNumber(IPAddress.Parse(ipAddress));
+        }
+
+        public static long IpToNumber(IPAddress ipAddress)
+        {
+            var bytes = ipAddress.GetAddressBytes();
+            return bytes[0] * 256 * 256 * 256 + bytes[1] * 256 * 256 + bytes[2] * 256 + bytes[3];
+        }
+
+        /// <summary>
+        /// true表示为内网IP
+        /// </summary>
+        /// <param name="ipAddress"></param>
+        /// <returns></returns>
+        public static bool IsIntranet(string ipAddress)
+        {
+            return IsIntranet(IpToNumber(ipAddress));
+        }
+        /// <summary>
+        /// true表示为内网IP
+        /// </summary>
+        /// <param name="ipAddress"></param>
+        /// <returns></returns>
+        public static bool IsIntranet(IPAddress ipAddress)
+        {
+            return IsIntranet(IpToNumber(ipAddress));
+        }
+        /// <summary>
+        /// true表示为内网IP
+        /// </summary>
+        /// <param name="longIP"></param>
+        /// <returns></returns>
+        public static bool IsIntranet(long longIP)
+        {
+            return ((longIP >= ipABegin) && (longIP <= ipAEnd) ||
+                    (longIP >= ipBBegin) && (longIP <= ipBEnd) ||
+                    (longIP >= ipCBegin) && (longIP <= ipCEnd));
+        }
+        /// <summary>
+        /// 获取本机内网IP
+        /// </summary>
+        /// <returns></returns>
+        public static IPAddress GetLocalIntranetIP()
+        {
+            var list = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
+            foreach (var child in list)
+            {
+                if (IsIntranet(child)) return child;
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// 获取本机内网IP列表
+        /// </summary>
+        /// <returns></returns>
+        public static List<IPAddress> GetLocalIntranetIPList()
+        {
+            var list = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
+            var result = new List<IPAddress>();
+            foreach (var child in list)
+            {
+                if (IsIntranet(child)) result.Add(child);
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// 获取MAC地址，仅支持单网卡
         /// </summary>
         /// <returns></returns>
@@ -25,23 +121,6 @@ namespace hb
             {
                 if (managementObject["IPEnabled"].ToString() == "True")
                     return managementObject["MacAddress"].ToString();
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 获取本机IP地址，仅支持单网卡
-        /// </summary>
-        /// <returns></returns>
-        public static string GetLocalHost()
-        {
-            IPAddress[] addrs = Dns.GetHostAddresses(Environment.MachineName);
-            foreach (IPAddress addr in addrs)
-            {
-                if (addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                {
-                    return addr.ToString();
-                }
             }
             return null;
         }
