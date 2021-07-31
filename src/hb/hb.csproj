@@ -75,6 +75,7 @@
     <Compile Include="Dynamic\DynamicUtils.cs" />
     <Compile Include="EnumExtensions.cs" />
     <Compile Include="FileWatcher.cs" />
+    <Compile Include="RandomExtension.cs" />
     <Compile Include="XDir.cs" />
     <Compile Include="XFile.cs" />
     <Compile Include="XGuid.cs" />
