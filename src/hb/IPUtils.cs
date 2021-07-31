@@ -131,7 +131,7 @@ namespace hb
         /// </summary>
         /// <param name="ip"></param>
         /// <returns></returns>
-        public static bool IsPrivateIP(this IPAddress ip)
+        public static bool IsPrivateIP(IPAddress ip)
         {
             //if (IPAddress.IsLoopback(ip)) return true;
             //ip = ip.IsIPv4MappedToIPv6 ? ip.MapToIPv4() : ip;
