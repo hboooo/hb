@@ -80,9 +80,12 @@
     <Compile Include="Localize\LanguageExtensionMethod.cs" />
     <Compile Include="Localize\LanguageService.cs" />
     <Compile Include="Native\NativeMethods.cs" />
+    <Compile Include="Point.cs" />
+    <Compile Include="Rect.cs" />
     <Compile Include="SuspendCtrlAltDelete.cs" />
     <Compile Include="VisualTreeHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WindowPlacement.cs" />
     <Compile Include="XApplication.cs" />
     <Compile Include="XAudio.cs" />
     <Compile Include="XImage.cs" />

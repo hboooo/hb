@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -81,6 +82,41 @@ namespace hb.wpf
         {
             SystemCommands.RestoreWindow(this);
         }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            try
+            {
+                // Load window placement details for previous application session from application settings
+                // Note - if window was closed on a monitor that is now disconnected from the computer,
+                //        SetWindowPlacement will place the window onto a visible monitor.
+                WindowPlacement wp = new WindowPlacement();//Settings.Default.WindowPlacement;
+                wp.length = Marshal.SizeOf(typeof(WindowPlacement));
+                wp.flags = 0;
+                wp.showCmd = (wp.showCmd == WindowPlacementHelper.SwShowminimized ? WindowPlacementHelper.SwShownormal : wp.showCmd);
+                var hwnd = new WindowInteropHelper(this).Handle;
+                WindowPlacementHelper.SetWindowPlacement(hwnd, ref wp);
+            }
+            catch
+            {
+                // ignored
+            }
+
+        }
+
+        // WARNING - Not fired when Application.SessionEnding is fired
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+
+            // Persist window placement details to application settings
+            WindowPlacement wp;
+            var hwnd = new WindowInteropHelper(this).Handle;
+            WindowPlacementHelper.GetWindowPlacement(hwnd, out wp);
+            //Settings.Default.WindowPlacement = wp;
+            //Settings.Default.Save();
+        }
     }
 
     public struct ACCENTPOLICY
@@ -129,6 +165,18 @@ namespace hb.wpf
         }
     }
 
+    public class WindowPlacementHelper
+    {
+        [DllImport("user32.dll")]
+        public static extern bool SetWindowPlacement(IntPtr hWnd, [In] ref WindowPlacement lpwndpl);
+
+        [DllImport("user32.dll")]
+        public static extern bool GetWindowPlacement(IntPtr hWnd, out WindowPlacement lpwndpl);
+
+        public const int SwShownormal = 1;
+        public const int SwShowminimized = 2;
+    }
+
     public partial class AreaWindowEvent
     {
         private DateTime lastTime = DateTime.MinValue;
@@ -150,8 +198,8 @@ namespace hb.wpf
 
                 var window = FindAncestorWindow(element);
 
-                var point = window.WindowState == WindowState.Maximized ? new Point(0, element.ActualHeight)
-                    : new Point(window.Left + window.BorderThickness.Left, element.ActualHeight + window.Top + window.BorderThickness.Top);
+                var point = window.WindowState == WindowState.Maximized ? new System.Windows.Point(0, element.ActualHeight)
+                    : new System.Windows.Point(window.Left + window.BorderThickness.Left, element.ActualHeight + window.Top + window.BorderThickness.Top);
                 point = element.TransformToAncestor(window).Transform(point);
                 SystemCommands.ShowSystemMenu(window, point);
             }
