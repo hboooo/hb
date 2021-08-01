@@ -1,4 +1,5 @@
 ﻿using hb.LogServices;
+using hb.wpf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace hb.demo
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : AreoWindow
     {
         public MainWindow()
         {
@@ -31,7 +32,7 @@ namespace hb.demo
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            
+
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
