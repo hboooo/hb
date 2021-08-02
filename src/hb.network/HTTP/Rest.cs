@@ -269,6 +269,11 @@ namespace hb.network.HTTP
             return this;
         }
 
+        public Rest ExecuteAsync()
+        {
+            return this;
+        }
+
         /// <summary>
         /// 获取当前上下文
         /// </summary>
