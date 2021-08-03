@@ -50,7 +50,7 @@ namespace hb.wpf
                     interop.EnsureHandle();
                     Screen screen = Screen.FromHandle(interop.Handle);
 
-                    Rect bounds = screen.Bounds.ToWpf().TransformFromDevice(this);
+                    System.Windows.Rect bounds = screen.Bounds.ToWpf().TransformFromDevice(this);
 
                     ResizeMode = ResizeMode.NoResize;
                     Left = bounds.Left;
@@ -88,10 +88,10 @@ namespace hb.wpf
     public static class WinFormsExtensions
     {
 
-        public static Rect TransformFromDevice(this Rect rect, Visual visual)
+        public static System.Windows.Rect TransformFromDevice(this System.Windows.Rect rect, Visual visual)
         {
             Matrix matrix = PresentationSource.FromVisual(visual).CompositionTarget.TransformFromDevice;
-            return Rect.Transform(rect, matrix);
+            return System.Windows.Rect.Transform(rect, matrix);
         }
 
         public static System.Windows.Point ToWpf(this System.Drawing.Point p)
