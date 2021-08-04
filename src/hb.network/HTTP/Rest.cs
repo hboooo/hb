@@ -2,6 +2,7 @@
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 
 namespace hb.network.HTTP
@@ -23,10 +24,12 @@ namespace hb.network.HTTP
         private Dictionary<string, object> _queryParams;
         private Dictionary<string, object> _bodyParams;
 
-        private Rest(Method method)
+        private Rest(Method method, string contentType)
         {
             _restClient = new RestClient();
             _request = new RestRequest((RestSharp.Method)method);
+            if (string.IsNullOrEmpty(contentType))
+                _request.AddHeader("Content-Type", "application/json; charset=utf-8");
         }
 
         /// <summary>
@@ -34,9 +37,20 @@ namespace hb.network.HTTP
         /// </summary>
         /// <param name="method">HTTP Method</param>
         /// <returns></returns>
-        public static Rest Create(Method method)
+        public static Rest Create(Method method, string contentType = null)
         {
-            return new Rest(method);
+            return new Rest(method, contentType);
+        }
+
+        /// <summary>
+        /// 超时，单位秒
+        /// </summary>
+        /// <param name="second"></param>
+        /// <returns></returns>
+        public Rest SetTimeout(int second)
+        {
+            _request.Timeout = second * 1000;
+            return this;
         }
 
         /// <summary>
@@ -239,6 +253,12 @@ namespace hb.network.HTTP
             return this;
         }
 
+        public Rest AddFile(string name, string path, string contentType = null)
+        {
+            _request.AddFile(name, path, contentType);
+            return this;
+        }
+
         private void PreparePostData()
         {
             if (_queryParams != null)
@@ -257,7 +277,7 @@ namespace hb.network.HTTP
         }
 
         /// <summary>
-        /// 开始发起当前请求
+        /// 开始发起请求
         /// </summary>
         /// <returns></returns>
         public Rest Execute()
@@ -269,9 +289,50 @@ namespace hb.network.HTTP
             return this;
         }
 
-        public Rest ExecuteAsync()
+        /// <summary>
+        /// 开始发起异步请求
+        /// </summary>
+        /// <param name="callback"></param>
+        public void ExecuteAsync(Action<Rest> callback)
         {
-            return this;
+            PreparePostData();
+            Func<IRestRequest, IRestResponse> action = new Func<IRestRequest, IRestResponse>(_restClient.Execute);
+            IAsyncResult result = action.BeginInvoke(_request, (asyncResult) =>
+            {
+                Rest rest = (Rest)asyncResult.AsyncState;
+                rest._response = action.EndInvoke(asyncResult);
+                callback.Invoke(rest);
+            }, this);
+        }
+
+        public bool DownloadFile(string filename)
+        {
+            bool downloaded = false;
+            using (var writer = new FileStream(filename, FileMode.Create))
+            {
+                _request.ResponseWriter = (responseSteam) => responseSteam.CopyTo(writer);
+                Func<IRestRequest, byte[]> action = new Func<IRestRequest, byte[]>(_restClient.DownloadData);
+                IAsyncResult result = action.BeginInvoke(_request, null, null);
+                var res = action.EndInvoke(result);
+                downloaded = writer.Length > 0 ? true : false;
+            }
+            if (!downloaded)
+            {
+                DeleteFile(filename);
+            }
+            return downloaded;
+        }
+
+        private void DeleteFile(string filename)
+        {
+            try
+            {
+                File.Delete(filename);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         /// <summary>
@@ -419,6 +480,9 @@ namespace hb.network.HTTP
 
         private object ParseResponseContent<T>() where T : class
         {
+            if (string.IsNullOrEmpty(_response.Content))
+                return null;
+
             if (typeof(T) == typeof(string))
             {
                 return _response.Content;
@@ -428,6 +492,9 @@ namespace hb.network.HTTP
 
         private object ParseResponseContentStruct<T>() where T : struct
         {
+            if (string.IsNullOrEmpty(_response.Content))
+                return null;
+
             return DynamicJson.DeserializeObject<T>(_response.Content);
         }
 
