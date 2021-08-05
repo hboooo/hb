@@ -14,9 +14,7 @@ namespace hb.network.HTTP
     /// </summary>
     public class Rest
     {
-        private string _url;
         private static volatile string _host;
-        private string _path;
         private IRestClient _restClient;
         private IRestRequest _request;
         private IRestResponse _response;
@@ -61,34 +59,7 @@ namespace hb.network.HTTP
         /// <returns></returns>
         public Rest SetUrl(string url)
         {
-            _url = url ?? throw new ArgumentNullException(nameof(url));
-            _restClient.BaseUrl = new Uri(_url);
-            return this;
-        }
-
-        /// <summary>
-        /// 设置http请求host，与path一起使用
-        /// 例如 https://github.com 与path构建为https://github.com/search
-        /// </summary>
-        /// <param name="host"></param>
-        /// <returns></returns>
-        public Rest SetHost(string host)
-        {
-            _host = host ?? throw new ArgumentNullException(nameof(host));
-            return this;
-        }
-
-        /// <summary>
-        /// 设置http请求path，与host一起使用
-        /// 例如 /search 与host构建为https://github.com/search
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public Rest SetPath(string path)
-        {
-            if (string.IsNullOrEmpty(_host)) throw new ArgumentNullException("host", "host must be set first");
-            _path = path ?? throw new ArgumentNullException(nameof(path));
-            _restClient.BaseUrl = new Uri(_host + _path);
+            _request.Resource = url;
             return this;
         }
 
@@ -333,6 +304,19 @@ namespace hb.network.HTTP
             {
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        public Rest GetCookies(out Dictionary<string, string> cookies)
+        {
+            cookies = new Dictionary<string, string>();
+            if (_response.Cookies != null)
+            {
+                foreach (var item in _response.Cookies)
+                {
+                    cookies[item.Name] = item.Value;
+                }
+            }
+            return this;
         }
 
         /// <summary>
