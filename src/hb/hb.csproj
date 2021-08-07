@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AESHelper.cs" />
+    <Compile Include="ReflectionHelper.cs" />
     <Compile Include="BytesExtensions.cs" />
     <Compile Include="BytesSerialize.cs" />
     <Compile Include="CallbackOnDispose.cs" />
