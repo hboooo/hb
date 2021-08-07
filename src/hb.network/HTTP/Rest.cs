@@ -14,7 +14,6 @@ namespace hb.network.HTTP
     /// </summary>
     public class Rest
     {
-        private static volatile string _host;
         private IRestClient _restClient;
         private IRestRequest _request;
         private IRestResponse _response;
@@ -60,6 +59,12 @@ namespace hb.network.HTTP
         public Rest SetUrl(string url)
         {
             _request.Resource = url;
+            return this;
+        }
+
+        public Rest SetBaseUrl(string baseUrl)
+        {
+            _restClient.BaseUrl = new Uri(baseUrl);
             return this;
         }
 
