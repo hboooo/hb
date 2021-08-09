@@ -13,28 +13,28 @@ namespace hb.Dynamic
     /// </summary>
     public class DynamicJson
     {
-        public static string SerializeObject(object value)
+        public static string SerializeObject(object value, bool isIndented = false)
         {
-            return JsonConvert.SerializeObject(value, Formatting.None);
+            return JsonConvert.SerializeObject(value, (Formatting)Convert.ToInt16(isIndented));
         }
-        public static string SerializeObjectNullIgnore(object value)
+        public static string SerializeObjectNullIgnore(object value, bool isIndented = false)
         {
             JsonSerializerSettings jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-            return JsonConvert.SerializeObject(value, Formatting.None, jsonSettings);
+            return JsonConvert.SerializeObject(value, (Formatting)Convert.ToInt16(isIndented), jsonSettings);
         }
 
-        public static string SerializeObject(object value, string[] properties, bool retain = true)
+        public static string SerializeObject(object value, string[] properties, bool retain = true, bool isIndented = false)
         {
             JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
             jsonSettings.ContractResolver = new LimitPropsContractResolver(properties, retain);
-            return JsonConvert.SerializeObject(value, Formatting.None, jsonSettings);
+            return JsonConvert.SerializeObject(value, (Formatting)Convert.ToInt16(isIndented), jsonSettings);
         }
 
-        public static string SerializeObjectNullIgnore(object value, string[] properties, bool retain = true)
+        public static string SerializeObjectNullIgnore(object value, string[] properties, bool retain = true, bool isIndented = false)
         {
             JsonSerializerSettings jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
             jsonSettings.ContractResolver = new LimitPropsContractResolver(properties, retain);
-            return JsonConvert.SerializeObject(value, Formatting.None, jsonSettings);
+            return JsonConvert.SerializeObject(value, (Formatting)Convert.ToInt16(isIndented), jsonSettings);
         }
 
         public static dynamic DeserializeObject(string value)
