@@ -1,0 +1,80 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="clr-namespace:hb.wpf.Controls">
+    <Style TargetType="{x:Type c:ImageButton}">
+        <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="IsExecuting" Value="False"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type c:ImageButton}">
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="mouseEnterStoryboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(RotateTransform.Angle)" Storyboard.TargetName="image">
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.15" Value="10"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="-10"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.45" Value="0"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="image">
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="0.4"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.4" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                        <Storyboard x:Key="rotateStoryboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(RotateTransform.Angle)"
+                                                           RepeatBehavior="Forever" Storyboard.TargetName="image">
+                                <EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="360"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Image x:Name="image" Source="{TemplateBinding DisplayImage}" 
+                               RenderTransformOrigin="0.5,0.5"
+                               VerticalAlignment="{TemplateBinding VerticalAlignment}" 
+                               Width="{TemplateBinding DisplayImageWidth}" Height="{TemplateBinding DisplayImageHeight}">
+                            <Image.Effect>
+                                <DropShadowEffect Color="Gray" ShadowDepth="3" Opacity="0.8" />
+                            </Image.Effect>
+                            <Image.RenderTransform>
+                                <TransformGroup>
+                                    <RotateTransform Angle="0"/>
+                                </TransformGroup>
+                            </Image.RenderTransform>
+                        </Image>
+                        <TextBlock x:Name="textBlock" Grid.Column="1"
+                                   VerticalAlignment="{TemplateBinding VerticalAlignment}" 
+                                   Text="{TemplateBinding Content}" FontSize="{TemplateBinding FontSize}"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="Mouse.MouseEnter">
+                            <BeginStoryboard Storyboard="{StaticResource mouseEnterStoryboard}"/>
+                        </EventTrigger>
+                        <Trigger Property="Position" Value="Left">
+                            <Setter TargetName="image" Property="Grid.Column" Value="0"/>
+                            <Setter TargetName="textBlock" Property="Grid.Column" Value="1"/>
+                            <Setter TargetName="textBlock" Property="Margin" Value="5,0,0,0"/>
+                        </Trigger>
+                        <Trigger Property="Position" Value="Right">
+                            <Setter TargetName="image" Property="Grid.Column" Value="1"/>
+                            <Setter TargetName="textBlock" Property="Grid.Column" Value="0"/>
+                            <Setter TargetName="textBlock" Property="Margin" Value="0,0,5,0"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Opacity" Value="{DynamicResource LinkButtonTextPressed}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="textBlock" Property="Opacity" Value="0.4"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

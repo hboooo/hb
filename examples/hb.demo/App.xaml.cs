@@ -13,5 +13,9 @@ namespace hb.demo
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            InitializeComponent();
+        }
     }
 }

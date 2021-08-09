@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AreoWindow.cs" />
+    <Compile Include="Controls\ImageButton.cs" />
     <Compile Include="Converter\BooleanToValueConverter.cs" />
     <Compile Include="Converter\BooleanToVisibleConverter.cs" />
     <Compile Include="FullScreenEnabledWindow.cs" />
@@ -90,9 +91,7 @@
     <Compile Include="XAudio.cs" />
     <Compile Include="XImage.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\hb\hb.csproj">
       <Project>{57CCFAC9-7274-4696-84D0-4B973100F22F}</Project>
@@ -100,6 +99,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Themes\AreoWindowStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\ButtonStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

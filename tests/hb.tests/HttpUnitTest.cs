@@ -20,8 +20,7 @@ namespace hb.tests
         public void ExecuteGetQuery()
         {
             var ret = Rest.Create(Method.GET)
-                .SetHost("http://www.baidu.com")
-                .SetPath("/s")
+                .SetBaseUrl("http://www.baidu.com")
                 .AddQueryParameter("wd", "双色球")
                 .Execute()
                 .TakeHttpCode();
