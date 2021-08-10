@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.ServiceModel.Dispatcher;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -24,7 +25,6 @@ namespace hb.demo
         private Image f_Image;                  //Wpf使用Image
         private object obj = new object();
         private Mat f_OriginalFrame = new Mat();
-        private Mat f_TargetFrame = new Mat();
 
         private string f_RtspStream = string.Empty;
 
@@ -55,19 +55,6 @@ namespace hb.demo
 
             try
             {
-                int width = 240;
-                int height = 200;
-                //if (f_PictureBox.Width > 0)
-                //    width = f_PictureBox.Width;
-                //if (f_PictureBox.Height > 0)
-                //    height = (int)f_PictureBox.Height;
-
-                if (f_Image.ActualWidth > 0)
-                    width = Convert.ToInt32(f_Image.ActualWidth);
-                if (f_Image.ActualHeight > 0)
-                    height = Convert.ToInt32(f_Image.ActualHeight);
-
-                System.Drawing.Size size = new System.Drawing.Size(width, height);
                 lock (obj)
                 {
                     if (!f_VideoCapture.Retrieve(f_OriginalFrame))
@@ -78,8 +65,6 @@ namespace hb.demo
                     if (f_OriginalFrame.IsEmpty)
                         return;
 
-                    CvInvoke.Resize(f_OriginalFrame, f_TargetFrame, size, 0, 0);
-
                     //Winform
                     //f_PictureBox.Invoke(new Action(() =>
                     //{
@@ -89,7 +74,7 @@ namespace hb.demo
                     //Wpf
                     f_Image.Dispatcher.Invoke(new Action(() =>
                     {
-                        f_Image.Source = ToBitmapSource(f_TargetFrame);
+                        f_Image.Source = ToBitmapSource(f_OriginalFrame);
                     }));
                 }
             }
@@ -101,30 +86,42 @@ namespace hb.demo
 
         public bool Start(IntPtr playerHandle, string rtspStream)
         {
-            if (string.Compare(f_RtspStream, rtspStream, true) != 0)
+            if (IntPtr.Zero.Equals(playerHandle))
             {
-                f_RtspStream = rtspStream ?? throw new ArgumentNullException("rtspStream");
-                try
-                {
-                    f_VideoCapture?.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                }
+                return false;
+            };
 
-                InitRtsp();
-            }
             PictureBox picture = System.Windows.Forms.Control.FromHandle(playerHandle) as PictureBox;
             if (picture == null)
             {
                 return false;
             }
 
+            f_RtspStream = rtspStream ?? throw new ArgumentNullException("rtspStream");
             //f_PictureBox = picture;
 
-            f_VideoCapture.Start();
-            return true;
+            try
+            {
+                f_VideoCapture?.Stop();
+                f_VideoCapture?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            try
+            {
+                InitRtsp();
+
+                //f_PictureBox = picture;
+                f_VideoCapture.Start(new CaptureExceptionHandler());
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return false;
         }
 
         public bool Start(PictureBox picture, string rtspStream)
@@ -144,7 +141,7 @@ namespace hb.demo
                 InitRtsp();
             }
             //f_PictureBox = picture;
-            f_VideoCapture.Start();
+            f_VideoCapture.Start(new CaptureExceptionHandler());
             return true;
         }
 
@@ -165,7 +162,7 @@ namespace hb.demo
                 InitRtsp();
             }
             f_Image = image;
-            f_VideoCapture.Start();
+            f_VideoCapture.Start(new CaptureExceptionHandler());
             return true;
         }
 
@@ -209,8 +206,17 @@ namespace hb.demo
         {
             f_VideoCapture?.Dispose();
             f_OriginalFrame?.Dispose();
-            f_TargetFrame?.Dispose();
+            f_OriginalFrame = null;
         }
 
+    }
+
+    public class CaptureExceptionHandler : ExceptionHandler
+    {
+        public override bool HandleException(Exception exception)
+        {
+            //忽略错误
+            return true;
+        }
     }
 }
