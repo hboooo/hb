@@ -9,7 +9,7 @@ using System.Xml.Linq;
 
 namespace UpdateAssemblyInfo
 {
-    class Program
+    class Git
     {
         const int BaseCommitRev = 0;
         static string gitBranchName;
@@ -56,7 +56,7 @@ namespace UpdateAssemblyInfo
 
         static int BuildWorkDirectory()
         {
-            string exeDir = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            string exeDir = Path.GetDirectoryName(typeof(Git).Assembly.Location);
             string slnPath = GetProjectSlnFile(exeDir);
             if (string.IsNullOrEmpty(slnPath))
             {

@@ -24,12 +24,14 @@ namespace hb
 
         private Action f_ComplateAction;
 
+        public const int Threads = 2;
+
         /// <summary>
         /// 初始化一个生产消费队列
         /// 队列中启动的线程个数 2
         /// </summary>
         /// <param name="action">消费者方法</param>
-        public TaskQueue(Action<T> action) : this(action, 2)
+        public TaskQueue(Action<T> action) : this(action, Threads)
         {
 
         }

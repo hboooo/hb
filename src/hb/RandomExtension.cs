@@ -39,5 +39,17 @@ namespace hb
             double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
             return mean + stdDev * randStdNormal;
         }
+
+        public static int Random()
+        {
+            int randomState = 1804289383;
+            int num = randomState;
+            num ^= num << 13;
+            num ^= num >> 17;
+            num ^= num << 5;
+            randomState = num;
+
+            return num;
+        }
     }
 }

@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace hb.wpf
@@ -180,6 +182,32 @@ namespace hb.wpf
                 Logger.Error(ex);
             }
             return null;
+        }
+
+        public static void SaveBitmap(Grid grid, int dpi, string filename)
+        {
+
+            var rtb = new RenderTargetBitmap(
+                (int)grid.Width,
+                (int)grid.Height,
+                dpi,
+                dpi,
+                PixelFormats.Pbgra32
+                );
+            rtb.Render(grid);
+            SaveRTBAsPNG(rtb, filename);
+
+        }
+
+        private static void SaveRTBAsPNG(RenderTargetBitmap bmp, string filename)
+        {
+            var enc = new System.Windows.Media.Imaging.PngBitmapEncoder();
+            enc.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(bmp));
+
+            using (var stm = System.IO.File.Create(filename))
+            {
+                enc.Save(stm);
+            }
         }
     }
 }
