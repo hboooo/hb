@@ -68,8 +68,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animations\GridLengthAnimation.cs" />
     <Compile Include="AreoWindow.cs" />
+    <Compile Include="Controls\BackgroundWoringImageButton.cs" />
     <Compile Include="Controls\ImageButton.cs" />
+    <Compile Include="Controls\XDynamicRenderer.cs" />
+    <Compile Include="Controls\XInkCanvas.cs" />
     <Compile Include="Converter\BooleanToValueConverter.cs" />
     <Compile Include="Converter\BooleanToVisibleConverter.cs" />
     <Compile Include="FullScreenEnabledWindow.cs" />

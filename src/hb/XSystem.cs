@@ -1,8 +1,10 @@
-﻿using System;
+﻿using hb.LogServices;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -113,5 +115,23 @@ namespace hb
             return pc.NextValue();
         }
 
+        public static string GetOperatingSystemInfo()
+        {
+            string caption = string.Empty;
+            string version = string.Empty;
+            try
+            {
+                var query = "SELECT * FROM Win32_OperatingSystem";
+                var searcher = new ManagementObjectSearcher(query);
+                var info = searcher.Get().Cast<ManagementObject>().FirstOrDefault();
+                caption = info.Properties["Caption"].Value.ToString();
+                version = info.Properties["Version"].Value.ToString();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return $"{caption}({version})";
+        }
     }
 }

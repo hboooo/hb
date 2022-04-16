@@ -42,5 +42,11 @@ namespace hb.wpf
             if (Application.Current != null)
                 Application.Current.Dispatcher.BeginInvoke(action);
         }
+
+        public static void UiInvoke(Action<object> action, object state)
+        {
+            if (Application.Current != null)
+                Application.Current.Dispatcher.BeginInvoke(action, state);
+        }
     }
 }
