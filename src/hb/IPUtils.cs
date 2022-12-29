@@ -5,6 +5,7 @@ using System.Linq;
 using System.Management;
 using System.Net;
 using System.Net.Sockets;
+using System.Net.NetworkInformation;
 
 namespace hb
 {
@@ -184,6 +185,35 @@ namespace hb
             }
             return false;
         }
-
+        
+        public static int GetUnusedPort()
+        {
+            var listener = new TcpListener(IPAddress.Loopback, 0);
+            listener.Start();
+            var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+            listener.Stop();
+            return port;
+        }
+        
+        public static bool IsPortUsed(int port)
+        {
+            try
+            {
+                IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
+                IPEndPoint[] ipendpoints = properties.GetActiveTcpListeners();
+                foreach (IPEndPoint ipendpoint in ipendpoints)
+                {
+                    if (ipendpoint.Port == port)
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //Logger.Error("IpHelper::IsPortUsed", ex);
+            }
+            return false;
+        }
     }
 }
